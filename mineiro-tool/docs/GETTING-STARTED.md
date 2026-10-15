@@ -11,7 +11,7 @@ Você precisa de uma destas duas coisas:
 
 Abra o notebook oficial:
 
-[▶ Mineiro Username Intelligence Official Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
+[▶ Mineiro Username Intelligence Official Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 No Colab:
 
@@ -36,8 +36,8 @@ Use Node.js 22 ou superior.
 ### 2. Clone
 
 ```bash
-git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
-cd Mineiro-OSINT-Extractor
+git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git
+cd mineirohml/mineiro-tool
 ```
 
 ### 3. Instale

@@ -1,22 +1,27 @@
+<div align="center">
+
+<img src="assets/mineiro-logo.png" alt="Mineiro" width="200" decoding="async">
+
 # Mineiro Username Intelligence
 
-<p align="center">
-  <img src="assets/mineiro-logo.png" alt="Mineiro" width="240" height="131" decoding="async">
+**OSINT Investigation Workbench para presença pública de usernames: evidência primeiro, correlação cautelosa, relatórios auditáveis.**
+
+<code>coleta → evidência → correlação → avaliação</code>
+
+<p>
+  <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111?style=flat-square">
+  <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111?style=flat-square">
+  <img alt="License" src="https://img.shields.io/badge/code-MIT-111111?style=flat-square">
+  <img alt="Sem IA" src="https://img.shields.io/badge/IA-nenhuma-111111?style=flat-square">
+  <img alt="Roda local" src="https://img.shields.io/badge/roda-local-111111?style=flat-square">
 </p>
 
-<p align="center"><strong>**OSINT Investigation Workbench** para presença pública de usernames, evidência, correlação cautelosa e relatórios auditáveis.</strong></p>
-
-<p align="center">
-  <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111">
-  <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
-  <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
+<p>
+  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a>
 </p>
 
-<p align="center">
-  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><strong>▶ Abrir no Google Colab</strong></a>
-  &nbsp;·&nbsp;
-  <a href="docs/GETTING-STARTED.md">Instalar localmente</a>
+<p>
+  <a href="#começar">Instalar</a>
   &nbsp;·&nbsp;
   <a href="docs/USER-GUIDE.md">Guia de uso</a>
   &nbsp;·&nbsp;
@@ -25,9 +30,11 @@
   <a href="README.md">English</a>
 </p>
 
-<p align="center">
-  <img src="assets/demo.gif" alt="Mineiro varrendo um handle público em 49 plataformas, com progresso ao vivo, veredictos por evidência e grafo de correlação" width="860">
-</p>
+<img src="assets/demo.gif" alt="Mineiro varrendo um handle público em 49 plataformas, com progresso ao vivo, veredictos por evidência e grafo de correlação" width="860">
+
+<sub>Um scan Standard de um handle público open source: progresso ao vivo, veredictos por plataforma (found / absent / uncertain), Evidence Engine e grafo de correlação.</sub>
+
+</div>
 
 ---
 
@@ -60,6 +67,12 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 
 ## Começar
 
+| Caminho | Precisa de | Boa escolha quando |
+|---|---|---|
+| **Colab** | Conta Google + navegador | você quer testar em dois minutos |
+| pip | Python | você só quer usar a ferramenta |
+| Código-fonte | Node.js 22+ | você quer desenvolver ou auditar |
+
 ### pip
 
 ```bash
@@ -77,17 +90,17 @@ pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/
 
 A forma mais rápida de testar o produto é o notebook oficial:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
-Ele cuida de clone/update, dependências, validação do Registry, servidor, health check e abertura da interface pelo proxy do Colab.
+O notebook (v1.7.0) baixa só a pasta `mineiro-tool/`, roda `npm ci`, valida o Registry, gera o build de produção, inicia `node dist/server.cjs` e abre a interface pelo proxy do Colab. Sem instalar nada, sem chaves de IA e sem servidor de desenvolvimento.
 
 ### Local
 
 Pré-requisito: **Node.js 22+**.
 
 ```bash
-git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
-cd Mineiro-OSINT-Extractor
+git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git
+cd mineirohml/mineiro-tool
 npm ci --no-audit --no-fund
 npm run dev
 ```

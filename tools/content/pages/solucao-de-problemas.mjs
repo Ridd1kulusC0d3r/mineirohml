@@ -22,7 +22,7 @@ export default {
       ["Full demora", "Cobertura ampla", "Use Full só quando a cobertura realmente importa"],
     ] },
     { t: "h2", x: "Atualizar no Colab" },
-    { t: "code", x: "%cd /content/Mineiro-OSINT-Extractor\n!git checkout main\n!git pull --ff-only\n!npm install --no-audit --no-fund" },
+    { t: "code", x: "%cd /content/mineirohml/mineiro-tool\n!git checkout main\n!git pull --ff-only\n!npm install --no-audit --no-fund" },
     { t: "p", x: "Depois reinicie a célula do servidor. O log fica em `/content/mineiro-server.log`." },
     { t: "h2", x: "Registry inválido" },
     { t: "p", x: "Rode `npm run registry:validate` e `npm run registry:stats`. Não corrija um detector só para o teste passar." },

@@ -30,7 +30,7 @@ npm run lint
 ## Colab: atualização limpa
 
 ```python
-%cd /content/Mineiro-OSINT-Extractor
+%cd /content/mineirohml/mineiro-tool
 !git checkout main
 !git pull --ff-only
 !npm install --no-audit --no-fund

@@ -6,7 +6,7 @@ O notebook canônico do Mineiro é:
 
 **[`notebooks/Mineiro_Username_Intelligence_Colab.ipynb`](../notebooks/Mineiro_Username_Intelligence_Colab.ipynb)**
 
-[▶ Abrir no Google Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
+[▶ Abrir no Google Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 ## O que ele faz
 

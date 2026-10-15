@@ -14,8 +14,8 @@ Contribuições úteis para o Mineiro melhoram uma destas áreas:
 ## Ambiente
 
 ```bash
-git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
-cd Mineiro-OSINT-Extractor
+git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git
+cd mineirohml/mineiro-tool
 npm install --no-audit --no-fund
 git checkout -b feature/minha-melhoria
 ```

@@ -1,6 +1,6 @@
 // Conteúdo pt-BR do guia — fiel a README / USER-GUIDE / GETTING-STARTED / INTELLIGENCE-METHODOLOGY do repositório.
 export const REPO = "https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor";
-export const COLAB = "https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb";
+export const COLAB = "https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb";
 export const WHEEL = "https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl";
 
 export const CHAPTERS = [
@@ -91,7 +91,7 @@ export const PRINCIPIOS = [
 
 export const CHEAT = [
   ["Instalar (pip)", "pip install "+WHEEL+"\nmineiro               # abre http://127.0.0.1:3000\nmineiro --check       # diagnóstico"],
-  ["Instalar (fonte)", "git clone " + REPO + ".git\ncd Mineiro-OSINT-Extractor\nnpm ci --no-audit --no-fund\nnpm run dev           # http://localhost:3000"],
+  ["Instalar (fonte)", "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-tool\nnpm ci --no-audit --no-fund\nnpm run dev           # http://localhost:3000"],
   ["Verificar", "GET /api/health   # versão e status saudável\nnpm test · npm run check · npm run detectors:health"],
   ["Grafo", "MATCH candidate=true AND similarity>=70\nSHARED type=DOMAIN\nPATH from=TARGET to=PROFILE"],
 ];
@@ -186,7 +186,7 @@ export const INSTALL = {
     { t: "Informe um alvo autorizado", d: "Use só um identificador que você tem autorização para pesquisar. Comece pelo preset pequeno." },
   ] },
   fonte: { nome: "Código-fonte", para: "Para quem quer rodar, testar ou contribuir. Pede Node 22 ou superior.", steps: [
-    { t: "Clone o repositório", d: "Baixa o código do projeto.", cmd: "git clone " + REPO + ".git\ncd Mineiro-OSINT-Extractor" },
+    { t: "Clone o repositório", d: "Baixa o código do projeto.", cmd: "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-tool" },
     { t: "Instale as dependências", d: "Com Node 22 ou superior. As flags evitam avisos de auditoria e anúncios de funding.", cmd: "npm ci --no-audit --no-fund" },
     { t: "Suba o modo de desenvolvimento", d: "A interface abre em `http://localhost:3000`.", cmd: "npm run dev" },
     { t: "Verifique a saúde", d: "O endpoint de saúde informa versão e status.", cmd: "curl http://localhost:3000/api/health" },
