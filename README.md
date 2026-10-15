@@ -9,18 +9,20 @@
 <code>coleta → evidência → correlação → avaliação</code>
 
 <p>
-  <img alt="Versão" src="https://img.shields.io/badge/mineiro-1.7.0-111111?style=flat-square">
-  <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111?style=flat-square">
+  <img alt="Versão" src="https://img.shields.io/badge/mineiro-2.0.0a1-111111?style=flat-square">
+  <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-111111?style=flat-square">
   <img alt="IA" src="https://img.shields.io/badge/IA-nenhuma-111111?style=flat-square">
   <img alt="Ambiente" src="https://img.shields.io/badge/ambiente-homologa%C3%A7%C3%A3o-111111?style=flat-square">
 </p>
 
 <p>
-  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a>
+  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-py/notebooks/Mineiro_Python_Colab.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a>
 </p>
 
 <p>
-  <a href="mineiro-tool/README.pt-BR.md">Ferramenta</a>
+  <a href="mineiro-py/README.md">Ferramenta (Python)</a>
+  &nbsp;·&nbsp;
+  <a href="mineiro-tool/README.pt-BR.md">Versão Node/React</a>
   &nbsp;·&nbsp;
   <a href="mineiro-tool/docs/USER-GUIDE.md">Guia de uso</a>
   &nbsp;·&nbsp;
@@ -37,6 +39,7 @@
 
 | Pasta | Conteúdo |
 |---|---|
+| [`mineiro-py/`](mineiro-py/) | **O Mineiro em Python** (recomendado): CLI, API e interface no notebook. ~80 kB, só `httpx`, sem servidor, sem IA. 985 detectores, baseline diferencial, Evidence Engine, grafo, STIX 2.1, casos e diff, relatórios com SHA-256 |
 | [`mineiro-tool/`](mineiro-tool/) | O Mineiro v1.7.0 refatorado: sem integrações de IA, `server.ts` dividido, `HOST` padrão `127.0.0.1`, UI com carregamento sob demanda |
 | `index.html` | **Guia visual**: a "Linha de Garimpo", um diagrama isométrico com sete etapas (faça, decida, evite), laboratórios clicáveis e mapa de fluxos |
 | [`docs/`](docs/index.html) | Documentação em pt-BR: instalação, primeiro scan, presets, Intelligence View, grafo, exportação, fluxo do analista, detectores, API e segurança, glossário, FAQ |
@@ -46,18 +49,20 @@ O site é HTML, CSS e JS estáticos, sem backend e sem chamadas a plataformas: a
 
 ## Começar em dois minutos
 
+**No Colab (sem servidor, sem proxy):**
+
 1. Clique em **Open in Colab** acima.
 2. Escolha **Runtime → Run all**.
-3. Abra o link **Abrir Mineiro** quando o card *Environment ready* aparecer.
+3. Na célula **Interface**, digite o alvo (um username que você esteja autorizado a pesquisar), escolha o preset e clique em **Run scan**.
 
-O notebook baixa só `mineiro-tool/`, faz `npm ci`, gera o build de produção e sobe `node dist/server.cjs`. Prefere rodar local?
+**No terminal:**
 
 ```bash
-git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git
-cd mineirohml/mineiro-tool
-npm ci --no-audit --no-fund
-npm run dev          # http://127.0.0.1:3000 (só loopback por padrão)
+pip install "mineiro @ git+https://github.com/Ridd1kulusC0d3r/mineirohml.git#subdirectory=mineiro-py"
+mineiro scan forgejo --lang pt --out relatorios/ --format html,markdown,json
 ```
+
+A versão Node/React (`mineiro-tool/`) continua no repositório como referência, com a interface web completa.
 
 ## Publicar o site no GitHub Pages
 

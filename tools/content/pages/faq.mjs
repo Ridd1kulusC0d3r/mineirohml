@@ -14,6 +14,7 @@ export default {
       ["Por que aparece UNCERTAIN?", "Rate limit, WAF, redirect ambíguo ou comportamento inconclusivo. O Mineiro prefere admitir incerteza a inventar certeza."],
       ["O Full faz 7.880 requisições?", "Não. São checagens lógicas possíveis, várias extraídas da mesma resposta."],
       ["Posso rodar no Colab?", "Sim, pelo notebook oficial."],
+      ["Qual versão devo usar, Python ou Node?", "A versão Python (`mineiro-py/`) é a recomendada: leve, sem servidor e com Colab sem proxy. A Node/React (`mineiro-tool/`) fica como referência, com a interface web completa."],
       ["O Mineiro usa IA?", "Não. Toda a avaliação é determinística e roda localmente, sem chaves de API."],
       ["O SHA-256 prova autoria?", "Não. Verifica a integridade do payload exportado."],
       ["Posso adicionar detectores?", "Sim, se o endpoint for público, a proveniência documentada e o comportamento testável. Veja [Detectores e Registry](detectores.html)."],
