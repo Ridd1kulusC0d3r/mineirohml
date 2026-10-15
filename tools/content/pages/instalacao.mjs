@@ -13,7 +13,7 @@ export default {
     { t: "p", x: "A interface abre em `http://127.0.0.1:3000`, acessível só na sua máquina. Os dados ficam em `~/.mineiro`." },
     { t: "code", x: "mineiro --check   # diagnóstico do ambiente" },
     { t: "h2", x: "Caminho 2 · Google Colab" },
-    { t: "p", x: "O repositório traz um notebook de inteligência de username. [Abrir no Colab](" + COLAB + "). Rode as células na ordem em que aparecem e use apenas um identificador que você esteja autorizado a pesquisar." },
+    { t: "p", x: "O notebook oficial baixa só `mineiro-tool/`, instala com `npm ci`, gera o build de produção e sobe `node dist/server.cjs` (sem IA e sem chaves). [Abrir no Colab](" + COLAB + "). Rode as células na ordem em que aparecem e use apenas um identificador que você esteja autorizado a pesquisar." },
     { t: "h2", x: "Caminho 3 · Código-fonte" },
     { t: "code", x: "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-tool\nnpm ci --no-audit --no-fund\nnpm run dev" },
     { t: "p", x: "Pede Node.js 22 ou superior. A interface abre em `http://localhost:3000`." },

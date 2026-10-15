@@ -180,9 +180,9 @@ export const INSTALL = {
     { t: "Suba a interface", d: "Abre a interface só na sua máquina, em `http://127.0.0.1:3000`. Os dados ficam em `~/.mineiro`.", cmd: "mineiro" },
     { t: "Rode o diagnóstico", d: "Confirma que o ambiente está saudável antes de pesquisar qualquer coisa.", cmd: "mineiro --check" },
   ] },
-  colab: { nome: "Colab", para: "Sem instalar nada: o notebook do projeto roda no navegador.", steps: [
-    { t: "Abra o notebook", d: "O repositório traz um notebook de inteligência de username para o Google Colab.", link: COLAB },
-    { t: "Execute as células na ordem", d: "Rode uma célula por vez, na ordem em que aparecem, e leia o que cada uma imprime." },
+  colab: { nome: "Colab", para: "Sem instalar nada: o notebook sobe o Mineiro numa VM temporária do Colab, sem IA e sem chaves.", steps: [
+    { t: "Abra o notebook", d: "O notebook oficial (v1.7.0) baixa só a pasta `mineiro-tool/`, instala com `npm ci`, gera o build e sobe o servidor.", link: COLAB },
+    { t: "Execute as células na ordem", d: "Escolha Runtime → Run all, ou rode uma célula por vez. Ao final, abra o link **Abrir Mineiro**." },
     { t: "Informe um alvo autorizado", d: "Use só um identificador que você tem autorização para pesquisar. Comece pelo preset pequeno." },
   ] },
   fonte: { nome: "Código-fonte", para: "Para quem quer rodar, testar ou contribuir. Pede Node 22 ou superior.", steps: [
