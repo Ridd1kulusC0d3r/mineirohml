@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react';
+import { lazy, useEffect, useState, useRef, useMemo } from 'react';
 import { Header } from './components/Header';
 import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
@@ -7,6 +7,8 @@ import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
+import { DossierPrintView } from './components/DossierPrintView';
+import { LazyBoundary } from './components/LazyBoundary';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { ToastProvider } from './components/Toast';
 import { PLATFORMS_DATABASE, DEFAULT_SCAN_CONFIGS, getPlatformsForScope } from './data/platforms';
@@ -43,7 +45,6 @@ const BulkImportModal = lazy(() => import('./components/BulkImportModal').then((
 const ModularScanModal = lazy(() => import('./components/ModularScanModal').then((m) => ({ default: m.ModularScanModal })));
 const InvestigationHistoryModal = lazy(() => import('./components/InvestigationHistoryModal').then((m) => ({ default: m.InvestigationHistoryModal })));
 const KeyboardShortcutsModal = lazy(() => import('./components/KeyboardShortcutsModal').then((m) => ({ default: m.KeyboardShortcutsModal })));
-const DossierPrintView = lazy(() => import('./components/DossierPrintView').then((m) => ({ default: m.DossierPrintView })));
 
 export default function App() {
   const [target, setTarget] = useState('');
@@ -1025,7 +1026,6 @@ export default function App() {
       />
 
       {/* Main Investigation Canvas */}
-      <Suspense fallback={null}>
       <main className={`flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         {/* Email Intelligence Card if email mode and active view is not dashboard or batch */}
         {activeView !== 'dashboard' && activeView !== 'intelligence' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
@@ -1034,17 +1034,19 @@ export default function App() {
 
         {/* View: Bulk Batch Target Reconnaissance Queue */}
         {activeView === 'batch' && (
-          <BulkScanView
-            batch={bulkBatch}
-            onPauseBatch={handlePauseBatch}
-            onResumeBatch={handleResumeBatch}
-            onSkipTarget={handleSkipTarget}
-            onAbortBatch={handleAbortBatch}
-            onOpenImport={() => setIsBulkModalOpen(true)}
-            onInspectTarget={handleInspectTarget}
-            onRemoveQueuedItem={handleRemoveQueuedItem}
-            isScanning={isScanning}
-          />
+          <LazyBoundary label="BulkScanView" fallback={<div className="py-10 text-center text-sm text-[#89919a]">Loading…</div>}>
+            <BulkScanView
+              batch={bulkBatch}
+              onPauseBatch={handlePauseBatch}
+              onResumeBatch={handleResumeBatch}
+              onSkipTarget={handleSkipTarget}
+              onAbortBatch={handleAbortBatch}
+              onOpenImport={() => setIsBulkModalOpen(true)}
+              onInspectTarget={handleInspectTarget}
+              onRemoveQueuedItem={handleRemoveQueuedItem}
+              isScanning={isScanning}
+            />
+          </LazyBoundary>
         )}
 
         {/* View: Intelligence Assessment Workspace */}
@@ -1061,36 +1063,40 @@ export default function App() {
 
         {/* View: Post-Scan Unified OSINT Dashboard */}
         {activeView === 'dashboard' && (
-          <DashboardView
-            target={target}
-            targetType={targetType}
-            results={results}
-            emailData={emailData}
-            onViewGrid={() => setActiveView('grid')}
-            onViewTable={() => setActiveView('table')}
-            onViewTerminal={() => setActiveView('terminal')}
-            onOpenExport={() => setIsExportOpen(true)}
-            onPivotScan={handlePivotScan}
-            isScanning={isScanning}
-            bulkBatch={bulkBatch}
-            onViewBatch={() => setActiveView('batch')}
-            onOpenImport={() => setIsBulkModalOpen(true)}
-            onInspectBatchTarget={handleInspectTarget}
-            onPauseBatch={handlePauseBatch}
-            onResumeBatch={handleResumeBatch}
-          />
+          <LazyBoundary label="DashboardView" fallback={<div className="py-10 text-center text-sm text-[#89919a]">Loading…</div>}>
+            <DashboardView
+              target={target}
+              targetType={targetType}
+              results={results}
+              emailData={emailData}
+              onViewGrid={() => setActiveView('grid')}
+              onViewTable={() => setActiveView('table')}
+              onViewTerminal={() => setActiveView('terminal')}
+              onOpenExport={() => setIsExportOpen(true)}
+              onPivotScan={handlePivotScan}
+              isScanning={isScanning}
+              bulkBatch={bulkBatch}
+              onViewBatch={() => setActiveView('batch')}
+              onOpenImport={() => setIsBulkModalOpen(true)}
+              onInspectBatchTarget={handleInspectTarget}
+              onPauseBatch={handlePauseBatch}
+              onResumeBatch={handleResumeBatch}
+            />
+          </LazyBoundary>
         )}
 
         {/* View: Correlation workspace */}
         {activeView === 'linkage' && (
-          <CorrelationWorkspace
-            target={target}
-            results={results}
-            emailData={emailData}
-            onPivotScan={handlePivotScan}
-            caseFile={currentCase}
-            onLoadSnapshot={loadCaseCollectionSnapshot}
-          />
+          <LazyBoundary label="CorrelationWorkspace" fallback={<div className="py-10 text-center text-sm text-[#89919a]">Loading…</div>}>
+            <CorrelationWorkspace
+              target={target}
+              results={results}
+              emailData={emailData}
+              onPivotScan={handlePivotScan}
+              caseFile={currentCase}
+              onLoadSnapshot={loadCaseCollectionSnapshot}
+            />
+          </LazyBoundary>
         )}
 
         {/* View: Platforms Grid */}
@@ -1131,44 +1137,56 @@ export default function App() {
       </main>
 
       {/* Modular Scan Configuration Modal */}
-      <ModularScanModal
-        isOpen={isModularModalOpen}
-        onClose={() => setIsModularModalOpen(false)}
-        config={scanConfig}
-        onSaveConfig={(newConfig) => {
-          setScanConfig(newConfig);
-          setSelectedCategory(newConfig.selectedCategory);
-          setConcurrency(newConfig.concurrency);
-          addLog(`[MODULAR CONFIG] Settings updated. Preset: ${newConfig.preset.toUpperCase()}`, 'info');
-        }}
-        onStartScanWithConfig={(newConfig) => {
-          setScanConfig(newConfig);
-          setSelectedCategory(newConfig.selectedCategory);
-          setConcurrency(newConfig.concurrency);
-          handleStartScan(newConfig);
-        }}
-        target={target}
-        targetType={targetType}
-        isScanning={isScanning}
-      />
+      {isModularModalOpen && (
+        <LazyBoundary label="ModularScanModal">
+          <ModularScanModal
+            isOpen={isModularModalOpen}
+            onClose={() => setIsModularModalOpen(false)}
+            config={scanConfig}
+            onSaveConfig={(newConfig) => {
+              setScanConfig(newConfig);
+              setSelectedCategory(newConfig.selectedCategory);
+              setConcurrency(newConfig.concurrency);
+              addLog(`[MODULAR CONFIG] Settings updated. Preset: ${newConfig.preset.toUpperCase()}`, 'info');
+            }}
+            onStartScanWithConfig={(newConfig) => {
+              setScanConfig(newConfig);
+              setSelectedCategory(newConfig.selectedCategory);
+              setConcurrency(newConfig.concurrency);
+              handleStartScan(newConfig);
+            }}
+            target={target}
+            targetType={targetType}
+            isScanning={isScanning}
+          />
+        </LazyBoundary>
+      )}
 
       {/* Bulk Target Import Modal */}
-      <BulkImportModal
-        isOpen={isBulkModalOpen}
-        onClose={() => setIsBulkModalOpen(false)}
-        onStartBulkScan={handleStartBulkScan}
-        currentCategory={selectedCategory}
-        currentConcurrency={concurrency}
-      />
+      {isBulkModalOpen && (
+        <LazyBoundary label="BulkImportModal">
+          <BulkImportModal
+            isOpen={isBulkModalOpen}
+            onClose={() => setIsBulkModalOpen(false)}
+            onStartBulkScan={handleStartBulkScan}
+            currentCategory={selectedCategory}
+            currentConcurrency={concurrency}
+          />
+        </LazyBoundary>
+      )}
 
       {/* Export Dossier Modal (JSON, CSV, TXT, PDF) */}
-      <IntelligenceExportModal
-        isOpen={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
-        target={target}
-        results={results}
-        requirement={intelligenceRequirement}
-      />
+      {isExportOpen && (
+        <LazyBoundary label="IntelligenceExportModal">
+          <IntelligenceExportModal
+            isOpen={isExportOpen}
+            onClose={() => setIsExportOpen(false)}
+            target={target}
+            results={results}
+            requirement={intelligenceRequirement}
+          />
+        </LazyBoundary>
+      )}
 
       {/* Hidden printable report layout rendered when window.print() is called */}
       <DossierPrintView
@@ -1179,27 +1197,35 @@ export default function App() {
       />
 
       {/* LocalStorage Investigation History Modal (Last 5 Scans) */}
-      <InvestigationHistoryModal
-        isOpen={isHistoryModalOpen}
-        onClose={() => setIsHistoryModalOpen(false)}
-        cachedScans={cachedScans}
-        currentTarget={target}
-        currentTargetType={targetType}
-        onLoadInvestigation={handleLoadCachedInvestigation}
-        onDeleteInvestigation={handleDeleteCachedInvestigation}
-        onClearAllHistory={handleClearAllHistory}
-        persistentCases={persistentCases}
-        currentCaseId={currentCaseId}
-        onLoadCase={loadPersistentCase}
-        onDeleteCase={handleDeletePersistentCase}
-      />
+      {isHistoryModalOpen && (
+        <LazyBoundary label="InvestigationHistoryModal">
+          <InvestigationHistoryModal
+            isOpen={isHistoryModalOpen}
+            onClose={() => setIsHistoryModalOpen(false)}
+            cachedScans={cachedScans}
+            currentTarget={target}
+            currentTargetType={targetType}
+            onLoadInvestigation={handleLoadCachedInvestigation}
+            onDeleteInvestigation={handleDeleteCachedInvestigation}
+            onClearAllHistory={handleClearAllHistory}
+            persistentCases={persistentCases}
+            currentCaseId={currentCaseId}
+            onLoadCase={loadPersistentCase}
+            onDeleteCase={handleDeletePersistentCase}
+          />
+        </LazyBoundary>
+      )}
 
       {/* Global Keyboard Shortcuts Cheat Sheet Modal */}
-      <KeyboardShortcutsModal
-        isOpen={isShortcutsModalOpen}
-        onClose={() => setIsShortcutsModalOpen(false)}
-        onActionTrigger={handleShortcutAction}
-      />
+      {isShortcutsModalOpen && (
+        <LazyBoundary label="KeyboardShortcutsModal">
+          <KeyboardShortcutsModal
+            isOpen={isShortcutsModalOpen}
+            onClose={() => setIsShortcutsModalOpen(false)}
+            onActionTrigger={handleShortcutAction}
+          />
+        </LazyBoundary>
+      )}
 
       {/* Modern Minimalist Footer */}
       <footer className="border-t border-[#2A2A2A] bg-[#050505] py-5 font-mono text-xs text-[#A3A3A3]">
@@ -1216,7 +1242,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-      </Suspense>
     </div>
     </ToastProvider>
   );

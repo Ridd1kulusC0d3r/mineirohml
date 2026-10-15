@@ -8,6 +8,8 @@
 - **Behavior change:** `HOST` defaults to `127.0.0.1` (was `0.0.0.0`), so `npm run dev` is no longer exposed on the LAN. The Dockerfile sets `ENV HOST=0.0.0.0`.
 - Web UI: heavy views and modals (Dashboard, Correlation, Batch, Export, History, Shortcuts, Scan settings) load on demand; the initial JavaScript bundle drops from 365 kB to 222 kB gzip.
 - Official Colab notebook (v1.7.0): partial checkout of `mineiro-tool/`, `npm ci`, production build and `node dist/server.cjs` instead of the Vite dev server.
+- A failed lazy chunk no longer blanks the app: views and modals are wrapped in `LazyBoundary` (inline notice + reload), modals mount only when opened, and the initial page loads just the main bundle and CSS.
+- The server logs `unhandledRejection`/`uncaughtException` instead of exiting. The Colab notebook frees a busy port and checks the page and an asset through the VM network interface before showing the link.
 
 ### Removed
 - **All AI integrations:** Gemini Analyst Copilot (`/api/intelligence/copilot*`, `/api/osint/gemini-validate`, `src/ai/`), the AI workspace/panel/key modal, `AI_SYNTHESIZED` provenance, `AiProfileReport` and every `aiProfile` prop, the `@google/genai` dependency, `GEMINI_API_KEY` and the AI toggles in scan/batch settings.

@@ -39,6 +39,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// A stray rejection from one request should be logged, not take the whole server (and the Colab link) down.
+process.on('unhandledRejection', (reason) => console.error('[unhandledRejection]', reason));
+process.on('uncaughtException', (err) => console.error('[uncaughtException]', err));
+
 async function startServer() {
   try {
     if (process.env.NODE_ENV !== 'production') {
