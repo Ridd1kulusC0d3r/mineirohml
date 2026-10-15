@@ -66,7 +66,7 @@ Também mostra a versão do notebook.
 ### 3 · Start Mineiro
 
 - encerra uma instância anterior da sessão;
-- inicia `node dist/server.cjs` em modo produção (escuta em `127.0.0.1`, sem servidor de desenvolvimento);
+- inicia `node dist/server.cjs` em modo produção (escuta em `0.0.0.0` dentro da VM isolada do Colab, porque o proxy do Colab não alcança o loopback; sem servidor de desenvolvimento);
 - grava logs em `/content/mineiro-server.log`;
 - espera `/api/health`;
 - exibe a URL do proxy.
@@ -112,3 +112,7 @@ Colab pode:
 - perder processos quando a sessão desconecta.
 
 Isso é esperado. Para uso persistente, rode localmente ou em infraestrutura própria.
+
+## Página com HTTP 500 no link do Colab
+
+O proxy do Colab só alcança o servidor se ele escutar em `0.0.0.0`. O notebook já faz isso. Se aparecer *HTTP ERROR 500*, rode de novo **Bootstrap** e **Start Mineiro** para usar a versão atual do notebook e, se persistir, veja o log em `/content/mineiro-server.log`.

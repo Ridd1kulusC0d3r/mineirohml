@@ -29,49 +29,8 @@ npm run lint
 
 ## Colab: atualização limpa
 
-```python
-%cd /content/mineirohml/mineiro-tool
-!git checkout main
-!git pull --ff-only
-!npm install --no-audit --no-fund
-```
+Rode de novo as células **Bootstrap** e **Start Mineiro**: o clone é atualizado, o build é refeito e o servidor reinicia.
 
-Depois reinicie a célula do servidor.
+## Colab: página com HTTP 500
 
-## Ver logs do servidor no Colab
-
-O notebook oficial mantém o log em:
-
-```text
-/content/mineiro-server.log
-```
-
-Use:
-
-```python
-!tail -n 80 /content/mineiro-server.log
-```
-
-## Registry inválido
-
-Execute:
-
-```bash
-npm run registry:validate
-npm run registry:stats
-```
-
-Não corrija um detector apenas para “fazer o teste passar”. O validator existe para impedir catálogo silenciosamente quebrado.
-
-## Ainda não resolveu?
-
-Ao abrir uma issue, inclua:
-
-- versão do Mineiro;
-- SO ou Colab;
-- versão do Node;
-- preset usado;
-- mensagem de erro;
-- passos mínimos para reproduzir.
-
-Não publique tokens, cookies, credenciais ou dados pessoais.
+O proxy do Colab só alcança o servidor em `0.0.0.0`. O notebook atual já usa isso; se o erro aparecer, atualize com as células acima. Veja também `/content/mineiro-server.log`.
