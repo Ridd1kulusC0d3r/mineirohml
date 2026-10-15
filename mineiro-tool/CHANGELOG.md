@@ -9,6 +9,7 @@
 - Web UI: heavy views and modals (Dashboard, Correlation, Batch, Export, History, Shortcuts, Scan settings) load on demand; the initial JavaScript bundle drops from 365 kB to 222 kB gzip.
 - Official Colab notebook (v1.7.0): partial checkout of `mineiro-tool/`, `npm ci`, production build and `node dist/server.cjs` instead of the Vite dev server.
 - A failed lazy chunk no longer blanks the app: views and modals are wrapped in `LazyBoundary` (inline notice + reload), modals mount only when opened, and the initial page loads just the main bundle and CSS.
+- Browser errors no longer leave an empty dark page: a root error boundary shows the error on screen and the page reports errors to `POST /api/client-log`, which prints them in the server log (the Colab Diagnostics cell shows it).
 - The server logs `unhandledRejection`/`uncaughtException` instead of exiting. The Colab notebook frees a busy port and checks the page and an asset through the VM network interface before showing the link.
 
 ### Removed

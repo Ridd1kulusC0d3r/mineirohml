@@ -6,6 +6,7 @@ import { extrasRouter } from './server/routes/extras';
 import { storeRouter } from './server/routes/store';
 import { emailRouter } from './server/routes/email';
 import { registryRouter } from './server/routes/registry';
+import { clientLogRouter } from './server/routes/clientlog';
 import { PUBLIC_MODE, rateLimit, securityHeaders } from './server/security/middleware';
 import { APP_VERSION } from './server/version';
 
@@ -27,6 +28,8 @@ app.use(extrasRouter());
 app.use(storeRouter());
 app.use(emailRouter());
 app.use(registryRouter());
+app.use('/api/client-log', rateLimit({ perMinute: 20, name: 'client-log' }));
+app.use(clientLogRouter());
 
 // Health check
 app.get('/api/health', (req, res) => {
