@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Product validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node22-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node22-npm-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Version consistency
+        run: npm run version:check
+
+      - name: Validate product brand
+        run: npm run brand:validate
+
+      - name: Validate i18n catalogs
+        run: npm run i18n:validate
+
+      - name: Validate Registry
+        run: npm run registry:validate
+
+      - name: Validate declarative detectors
+        run: npm run detectors:validate
+
+      - name: Type check
+        run: npm run lint
+
+      - name: Unit tests (evidence, baseline, SSRF guard)
+        run: npm test
+
+      - name: Synthetic detector demo
+        run: npm run demo
+
+      - name: Intelligence smoke test
+        run: npm run intelligence:test
+
+      - name: Graph hunting smoke test
+        run: npm run graph:test
+
+      - name: Case Diff Intelligence smoke test
+        run: npm run case:test
+
+      - name: Validate official Colab
+        run: npm run colab:validate
+
+      - name: Validate documentation surface
+        run: npm run docs:validate
+
+      - name: Validate offline manual
+        run: npm run manual:validate
+
+      - name: Validate launchers
+        run: |
+          bash -n iniciar-mineiro.sh
+          bash -n Iniciar-Mineiro.command
+
+      - name: Build production bundle
+        run: npm run build
+
+  python-package:
+    name: pip package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci --prefer-offline --no-audit --no-fund
+      - name: Stage app inside the package
+        run: npm run build:python
+      - name: Launcher unit tests
+        working-directory: python
+        run: PYTHONPATH=src python -m unittest discover -s tests -v
+      - name: Build wheel
+        run: pip wheel ./python --no-deps -w wheelhouse
+      - name: Install wheel in a clean venv and boot it
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install wheelhouse/*.whl
+          /tmp/venv/bin/mineiro --check
+          /tmp/venv/bin/mineiro --no-browser --port 3199 --data-dir /tmp/mineiro-data &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3199/api/health && break; sleep 1; done
+          curl -sf http://127.0.0.1:3199/api/health | grep '"status":"ok"'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel
+          path: wheelhouse/*.whl

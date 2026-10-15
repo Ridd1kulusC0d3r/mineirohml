@@ -1,0 +1,19 @@
+services:
+  mineiro-osint:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mineiro-osint
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - MINEIRO_DB=/app/data/mineiro.sqlite
+    volumes:
+      - mineiro-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  mineiro-data:
