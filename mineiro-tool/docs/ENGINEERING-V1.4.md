@@ -40,7 +40,6 @@ A motivação é evitar que uma resposta HTTP seja promovida diretamente a concl
 │ Express API                                                 │
 │ /api/osint/verify                                           │
 │ /api/registry/*                                             │
-│ /api/intelligence/copilot                                   │
 └──────────────┬──────────────────────────────────────────────┘
                │
                ▼
@@ -97,16 +96,6 @@ Camada determinística que produz:
 - pivots;
 - collection plan;
 - stop condition.
-
-### AI Analyst Copilot
-Camada opcional. Recebe somente a avaliação já estruturada.
-
-Regras:
-- não coleta novos dados;
-- não aumenta confiança factual;
-- não infere atributos sensíveis;
-- não transforma username compartilhado em identidade confirmada;
-- saída sempre marcada `AI_SYNTHESIZED`.
 
 ## 4. Modelo de dados
 
@@ -194,7 +183,7 @@ UI e exports.
 RAW → NORMALIZED → EVIDENCE → ANALYTICAL → REPORT
 ```
 
-Cada transição deve ser reproduzível sem depender de IA.
+Cada transição deve ser reproduzível e determinística.
 
 ## 7. Performance no Colab
 

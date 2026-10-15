@@ -90,97 +90,6 @@ export interface ScanSummaryMetrics {
   completedAt: string;
 }
 
-export interface InvestigationPivot {
-  hop: string;
-  type: 'username' | 'domain' | 'email' | 'crypto' | 'code';
-  explanation: string;
-  recommendedAction: string;
-}
-
-export interface BehavioralSignals {
-  opsecHygiene: 'Poor' | 'Basic' | 'Moderate' | 'High' | 'Paranoid';
-  timezone?: string; // e.g. "UTC-3 (America/Sao_Paulo / BRT)"
-  timezoneSignals?: string[]; // Specific signals extracted from identified platform profiles
-  activeTimezoneWindow: string; // e.g. "UTC-3 (14:00 - 23:00 UTC)"
-  language?: string; // e.g. "Portuguese (Native) / English (Technical Standard)"
-  primaryLanguage?: string; // e.g. "Portuguese" or "English"
-  secondaryLanguages?: string[]; // e.g. ["English", "Spanish"]
-  languageSignals?: string[]; // Specific language and locale indicators extracted from identified platform profiles
-  linguisticStyle: string; // e.g. "Technical, concise, English & Portuguese bilingual indicators"
-  socialExposureRisk: 'Minimal' | 'Moderate' | 'Elevated' | 'Severe';
-  handlePersistencePattern: 'Single Moniker Reuse' | 'Predictable Affixes' | 'Segmented Personas' | 'High-Entropy Anon';
-  anonymityEffort: 'Low' | 'Moderate' | 'High';
-  accountCreationEra?: string; // e.g. "Early Adopter (2012-2016)"
-}
-
-export interface ThreatActorAnalysis {
-  isThreatActorSuspect: boolean;
-  threatActorCategory:
-    | 'BENIGN_CIVILIAN'
-    | 'AUTHORIZED_SECURITY_RESEARCHER'
-    | 'AUTHORIZED_RED_TEAM'
-    | 'DEFENSIVE_BLUE_TEAM'
-    | 'COMMODITY_SCRIPT_OPERATOR'
-    | 'UNDERGROUND_FORUM_BROKER'
-    | 'FINANCIALLY_MOTIVATED_ACTOR'
-    | 'HACKTIVIST_OPERATOR'
-    | 'INSIDER_RISK_DISCREPANCY'
-    | 'STEALTH_OPSEC_OPERATOR';
-  threatActorScore: number; // 0 - 100
-  confidenceScore: number; // 0 - 100
-  verdictTitle: string;
-  verdictSummary: string;
-  occupationCrossReference: {
-    inferredOccupation: string;
-    platformBehaviorPattern: string;
-    consistencyVerdict: 'CONSISTENT_LEGITIMATE' | 'NEUTRAL_BENIGN' | 'SUSPICIOUS_ANOMALY' | 'HIGH_RISK_DISCREPANCY';
-    analysis: string;
-  };
-  observedTTPs: string[];
-  indicatorMatches: Array<{
-    category: 'underground' | 'offensive_tools' | 'opsec_evasion' | 'leaks_dumps' | 'credential_recon';
-    severity: 'low' | 'medium' | 'high' | 'critical';
-    indicator: string;
-    evidence: string;
-  }>;
-  mitreTactics?: string[];
-}
-
-export interface TechnicalFootprint {
-  level: 'None' | 'Minimal' | 'Moderate' | 'Advanced' | 'Expert';
-  isTechProfessional: boolean;
-  evidence: string;
-  primaryTools?: string[];
-}
-
-export interface AiProfileReport {
-  target: string;
-  targetType: 'username' | 'email';
-  summary: string;
-  threatLevel: 'Low' | 'Moderate' | 'Elevated' | 'Critical';
-  footprintScore: number; // 0 - 100
-  industry?: string; // e.g. "Creative Arts & Design", "Cybersecurity & Infosec", "Endurance Athletics"
-  interests?: string[]; // Distinct extracted subject-matter interests
-  technicalFootprint?: TechnicalFootprint; // Distinct technical footprint assessment
-  archetype: string; // e.g. "Offensive Security Engineer & Bug Bounty Hunter", "Concept Artist & Digital Illustrator"
-  archetypeDescription?: string;
-  behavioralSignals?: BehavioralSignals;
-  threatActorAnalysis?: ThreatActorAnalysis;
-  threatVulnerabilities?: string[];
-  recommendedDefensiveActions?: string[];
-  psycholinguisticClues?: string[];
-  technicalSkills: string[];
-  personalityTraits: string[];
-  inferredLocations: string[];
-  potentialInterests: string[];
-  identityCorrelation: string;
-  investigationPivots: InvestigationPivot[];
-  generatedAt: string;
-  modelUsed?: string;
-  isCustomKey?: boolean;
-  fallbackNotice?: string;
-}
-
 export interface AccountLinkageNode {
   id: string;
   label: string;
@@ -237,7 +146,6 @@ export interface BulkTargetItem {
   totalScanned: number;
   results?: ScanResult[];
   emailData?: EmailReconData | null;
-  aiProfile?: AiProfileReport | null;
   startedAt?: string;
   completedAt?: string;
   error?: string;
@@ -251,7 +159,6 @@ export interface BulkBatchState {
   currentIndex: number;
   isActive: boolean;
   isPaused: boolean;
-  autoAiProfile: boolean;
   selectedCategory: string;
   concurrency: number;
   startedAt?: string;
@@ -277,8 +184,6 @@ export interface ModularScanConfig {
   scanDepth?: 'fast' | 'deep'; // Quick toggle scan depth alias
   // Module 4: Email & DNS Intelligence
   enableEmailRecon: boolean; // DNS MX lookup & Gravatar check
-  // Module 5: Gemini AI Dossier Generation
-  enableAutoAiProfile: boolean; // Auto-trigger Gemini synthesis upon completion or on-demand
   enableEvidenceChecks: boolean; // run the optional multi-signal evidence engine on each response
   // Module 6: Account Linkage Correlation
   enableAccountLinkage: boolean; // Cross-platform correlation
@@ -295,9 +200,6 @@ export interface InvestigationSnapshot {
   verifiedCount: number;
   uncertainCount: number;
   totalPlatforms: number;
-  aiArchetype?: string;
-  threatLevel?: string;
-  footprintScore?: number;
   summaryBlockText: string; // Formatted forensic verification block
 }
 
@@ -310,7 +212,6 @@ export interface CachedInvestigation {
   formattedTime: string; // e.g. "16/09 03:45"
   results: ScanResult[];
   emailData: EmailReconData | null;
-  aiProfile: AiProfileReport | null;
   preset: ScanPreset;
   foundCount: number;
   uncertainCount: number;

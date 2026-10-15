@@ -3,13 +3,16 @@
 ## [Unreleased]
 
 ### Changed
-- `server.ts` split into `server/routes/{copilot,email,registry}.ts`; `server.ts` now only holds the banner, middlewares, router mounting, `/api/health` and `startServer()`. Rate limits keep applying to the same routes.
-- The server version now comes from `package.json` (`server/version.ts`) for health, the Gemini User-Agent and the startup log; `version:check` no longer inspects `server.ts`.
+- `server.ts` split into `server/routes/{email,registry}.ts`; `server.ts` now only holds the banner, middlewares, router mounting, `/api/health` and `startServer()`. Rate limits keep applying to the same routes.
+- The server version now comes from `package.json` (`server/version.ts`) for health and the startup log; `version:check` no longer inspects `server.ts`.
 - **Behavior change:** `HOST` defaults to `127.0.0.1` (was `0.0.0.0`), so `npm run dev` is no longer exposed on the LAN. The Dockerfile sets `ENV HOST=0.0.0.0`.
+- Web UI: heavy views and modals (Dashboard, Correlation, Batch, Export, History, Shortcuts, Scan settings) load on demand; the initial JavaScript bundle drops from 365 kB to 222 kB gzip.
+- Official Colab notebook (v1.7.0): partial checkout of `mineiro-tool/`, `npm ci`, production build and `node dist/server.cjs` instead of the Vite dev server.
 
 ### Removed
-- Legacy `/api/osint/profile` endpoint (off by default since v1.4.1) and its heuristic modules (`platformSignalExtractor`, `behavioralEngine`, `threatActorHeuristics`), plus the unused `fetchAiProfile` / `isAiLoading` state in `App.tsx`.
-- Unused files: `AiProfileCard.tsx`, `DossierTimeline.tsx`, `ExportModal.tsx`, `geminiProfiler.ts`, `reportGenerator.ts`, `platformTimelineData.ts`.
+- **All AI integrations:** Gemini Analyst Copilot (`/api/intelligence/copilot*`, `/api/osint/gemini-validate`, `src/ai/`), the AI workspace/panel/key modal, `AI_SYNTHESIZED` provenance, `AiProfileReport` and every `aiProfile` prop, the `@google/genai` dependency, `GEMINI_API_KEY` and the AI toggles in scan/batch settings.
+- Legacy `/api/osint/profile` endpoint and its heuristic modules (`platformSignalExtractor`, `behavioralEngine`, `threatActorHeuristics`), plus the unused `fetchAiProfile` / `isAiLoading` state in `App.tsx`.
+- Unused files: `AiProfileCard.tsx`, `DossierTimeline.tsx`, `ExportModal.tsx`, `geminiProfiler.ts`, `reportGenerator.ts`, `platformTimelineData.ts`; unused devDependency `autoprefixer`.
 
 ## [1.7.0] - 2026-10-02
 

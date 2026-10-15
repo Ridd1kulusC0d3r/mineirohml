@@ -12,7 +12,7 @@ export interface GlobalShortcutsOptions {
   onOpenModular?: () => void;
   onToggleScanDepth?: () => void;
   onCloseActiveModal?: () => boolean; // Returns true if a modal was closed
-  onChangeView?: (view: 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch') => void;
+  onChangeView?: (view: 'dashboard' | 'grid' | 'table' | 'linkage' | 'terminal' | 'batch') => void;
   isScanning?: boolean;
   target?: string;
   setTarget?: (val: string) => void;
@@ -202,10 +202,6 @@ export function useGlobalShortcuts(options: GlobalShortcutsOptions) {
             case '3':
               e.preventDefault();
               onChangeView('table');
-              break;
-            case '4':
-              e.preventDefault();
-              onChangeView('profile');
               break;
             case '5':
               e.preventDefault();

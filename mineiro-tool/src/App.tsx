@@ -1,29 +1,17 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react';
 import { Header } from './components/Header';
 import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
-import { DashboardView } from './components/DashboardView';
 import { IntelligenceReportView } from './components/IntelligenceReportView';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
-import { IntelligenceExportModal } from './components/IntelligenceExportModal';
-import { DossierPrintView } from './components/DossierPrintView';
-import { GeminiConfigModal } from './components/GeminiConfigModal';
-import { CorrelationWorkspace } from './components/CorrelationWorkspace';
-import { AiWorkspace } from './components/AiWorkspace';
-import { BulkImportModal } from './components/BulkImportModal';
-import { BulkScanView } from './components/BulkScanView';
-import { ModularScanModal } from './components/ModularScanModal';
-import { InvestigationHistoryModal } from './components/InvestigationHistoryModal';
-import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { ToastProvider } from './components/Toast';
 import { PLATFORMS_DATABASE, DEFAULT_SCAN_CONFIGS, getPlatformsForScope } from './data/platforms';
 import { 
   ScanResult, 
-  AiProfileReport, 
   EmailReconData, 
   ScanLog, 
   BulkBatchState, 
@@ -46,6 +34,17 @@ import {
   takeInvestigationSnapshot 
 } from './utils/scanStorage';
 
+// Heavy views and modals load on demand to keep the first paint light.
+const DashboardView = lazy(() => import('./components/DashboardView').then((m) => ({ default: m.DashboardView })));
+const CorrelationWorkspace = lazy(() => import('./components/CorrelationWorkspace').then((m) => ({ default: m.CorrelationWorkspace })));
+const BulkScanView = lazy(() => import('./components/BulkScanView').then((m) => ({ default: m.BulkScanView })));
+const IntelligenceExportModal = lazy(() => import('./components/IntelligenceExportModal').then((m) => ({ default: m.IntelligenceExportModal })));
+const BulkImportModal = lazy(() => import('./components/BulkImportModal').then((m) => ({ default: m.BulkImportModal })));
+const ModularScanModal = lazy(() => import('./components/ModularScanModal').then((m) => ({ default: m.ModularScanModal })));
+const InvestigationHistoryModal = lazy(() => import('./components/InvestigationHistoryModal').then((m) => ({ default: m.InvestigationHistoryModal })));
+const KeyboardShortcutsModal = lazy(() => import('./components/KeyboardShortcutsModal').then((m) => ({ default: m.KeyboardShortcutsModal })));
+const DossierPrintView = lazy(() => import('./components/DossierPrintView').then((m) => ({ default: m.DossierPrintView })));
+
 export default function App() {
   const [target, setTarget] = useState('');
   const [targetType, setTargetType] = useState<'username' | 'email'>('username');
@@ -53,7 +52,7 @@ export default function App() {
   const [concurrency, setConcurrency] = useState<number>(16);
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<
-    'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'ai' | 'linkage' | 'terminal' | 'batch'
+    'intelligence' | 'dashboard' | 'grid' | 'table' | 'linkage' | 'terminal' | 'batch'
   >('intelligence');
   const [intelligenceRequirement, setIntelligenceRequirement] = useState<IntelligenceRequirement>('account_correlation');
 
@@ -76,17 +75,6 @@ export default function App() {
   const [scanConfig, setScanConfig] = useState<ModularScanConfig>(DEFAULT_SCAN_CONFIGS.quick);
   const [isModularModalOpen, setIsModularModalOpen] = useState<boolean>(false);
 
-  // Personal Gemini API Key & Model Configuration
-  const [personalGeminiKey, setPersonalGeminiKey] = useState<string>(() => {
-    return localStorage.getItem('mineiro_gemini_key') || '';
-  });
-  const [selectedGeminiModel, setSelectedGeminiModel] = useState<string>(() => {
-    const saved = localStorage.getItem('mineiro_gemini_model');
-    if (saved && saved !== 'gemini-flash-latest') return saved;
-    return 'gemini-3.8-flash';
-  });
-  const [isGeminiModalOpen, setIsGeminiModalOpen] = useState<boolean>(false);
-
   // Bulk Target CSV Batch State
   const [isBulkModalOpen, setIsBulkModalOpen] = useState<boolean>(false);
   const [bulkBatch, setBulkBatch] = useState<BulkBatchState | null>(null);
@@ -97,7 +85,6 @@ export default function App() {
 
   // Results & Recon State
   const [results, setResults] = useState<ScanResult[]>([]);
-  const [aiProfile, setAiProfile] = useState<AiProfileReport | null>(null);
   const [emailData, setEmailData] = useState<EmailReconData | null>(null);
   const [isEmailLoading, setIsEmailLoading] = useState<boolean>(false);
   const [logs, setLogs] = useState<ScanLog[]>([]);
@@ -168,7 +155,6 @@ export default function App() {
     setTargetType(snapshot.targetType);
     setResults(snapshot.results || []);
     setEmailData(snapshot.emailData || null);
-    setAiProfile(null);
     setScanConfig((previous) => ({ ...previous, preset: snapshot.preset }));
     setActiveView('linkage');
     addLog(
@@ -479,7 +465,6 @@ export default function App() {
 
     abortRef.current = false;
     setIsScanning(true);
-    setAiProfile(null);
     setEmailData(null);
 
     const cleanTarget = target.trim();
@@ -499,7 +484,6 @@ export default function App() {
         targetType,
         results: scanResult.results,
         emailData: scanResult.emailData,
-        aiProfile: null,
         preset: activeCfg.preset,
         foundCount: scanResult.foundCount,
         uncertainCount: scanResult.uncertainCount,
@@ -538,7 +522,6 @@ export default function App() {
           targetType,
           results: scanResult.results,
           emailData: scanResult.emailData,
-          aiProfile: null,
           preset: activeCfg.preset,
           foundCount: scanResult.foundCount,
           uncertainCount: scanResult.uncertainCount,
@@ -554,9 +537,6 @@ export default function App() {
     // Transition to the Results Dashboard after scan completes
     setActiveView('intelligence');
 
-    if (scanResult.foundCount > 0) {
-      addLog('[SCAN] AI analysis remains on-demand in the evidence-bounded Analyst Copilot.', 'info');
-    }
   };
 
   const handleStopScan = () => {
@@ -572,7 +552,6 @@ export default function App() {
     options: {
       category: string;
       concurrency: number;
-      autoAiProfile: boolean;
     }
   ) => {
     if (importedTargets.length === 0) return;
@@ -593,7 +572,6 @@ export default function App() {
       currentIndex: 0,
       isActive: true,
       isPaused: false,
-      autoAiProfile: options.autoAiProfile,
       selectedCategory: options.category,
       concurrency: options.concurrency,
       startedAt: new Date().toLocaleTimeString(),
@@ -641,7 +619,6 @@ export default function App() {
         ...scanConfig,
         selectedCategory: options.category,
         concurrency: options.concurrency,
-        enableAutoAiProfile: false,
       };
 
       const probeResult = await scanTargetCore(
@@ -663,9 +640,6 @@ export default function App() {
       } else {
         currentItem.status = 'completed';
       }
-
-      // Legacy automatic profiling is disabled in v1.4.1.
-      // Analysts can use the evidence-bounded Copilot after inspecting the target.
 
       setBulkBatch({ ...newBatch, currentIndex: idx });
       addLog(`<<< [BATCH ${idx + 1}/${newBatch.items.length}] Target @${currentItem.target} completed: ${currentItem.foundCount} hits located.`, 'success');
@@ -721,7 +695,6 @@ export default function App() {
       setResults(item.results);
     }
     setEmailData(item.emailData || null);
-    setAiProfile(item.aiProfile || null);
     setActiveView('intelligence');
     addLog(`Loaded forensic dossier for batch target: @${item.target}`, 'info');
   };
@@ -743,7 +716,6 @@ export default function App() {
     setTargetType(cached.targetType);
     setResults(cached.results || []);
     setEmailData(cached.emailData || null);
-    setAiProfile(cached.aiProfile || null);
     setActiveView('intelligence');
     addLog(`[CACHE RESTORE] Restored investigation for "${cached.target}" (${cached.foundCount} hits, cached on ${cached.formattedTime})`, 'success');
   };
@@ -765,7 +737,6 @@ export default function App() {
     setIsScanning(false);
     setTarget('');
     setResults([]);
-    setAiProfile(null);
     setEmailData(null);
     setCurrentCaseId(null);
     setLogs([]);
@@ -808,7 +779,6 @@ export default function App() {
       ...DEFAULT_SCAN_CONFIGS.standard,
       concurrency: Math.min(10, DEFAULT_SCAN_CONFIGS.standard.concurrency),
       enableEvidenceChecks: true,
-      enableAutoAiProfile: false,
     };
 
     addLog(`[GRAPH PIVOT] Background scan started for @${clean} from @${target || 'target'}.`, 'info');
@@ -836,7 +806,6 @@ export default function App() {
       targetType: 'username',
       results: pivotResult.results,
       emailData: null,
-      aiProfile: null,
       preset: pivotConfig.preset,
       foundCount: pivotResult.foundCount,
       uncertainCount: pivotResult.uncertainCount,
@@ -902,10 +871,6 @@ export default function App() {
         setIsBulkModalOpen(false);
         return true;
       }
-      if (isGeminiModalOpen) {
-        setIsGeminiModalOpen(false);
-        return true;
-      }
       if (isExportOpen) {
         setIsExportOpen(false);
         return true;
@@ -962,9 +927,6 @@ export default function App() {
       case 'view-table':
         setActiveView('table');
         break;
-      case 'view-profile':
-        setActiveView('ai');
-        break;
       case 'view-linkage':
         setActiveView('linkage');
         break;
@@ -1004,14 +966,11 @@ export default function App() {
         onReset={handleReset}
         onOpenExport={() => setIsExportOpen(true)}
         onGoToDashboard={() => setActiveView('intelligence')}
-        onOpenAiWorkspace={() => setActiveView('ai')}
         onOpenBulkImport={() => setIsBulkModalOpen(true)}
         onOpenHistory={() => setIsHistoryModalOpen(true)}
         onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
         cachedScansCount={persistentCases.length}
         bulkBatchCount={bulkBatch ? bulkBatch.items.length : 0}
-        hasPersonalKey={Boolean(personalGeminiKey)}
-        selectedModel={selectedGeminiModel}
         foundCount={foundCount}
         totalScanned={scannedCount}
         isScanning={isScanning}
@@ -1061,12 +1020,12 @@ export default function App() {
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         isScanning={isScanning}
-        hasAiReport={Boolean(aiProfile)}
         batchCount={bulkBatch ? bulkBatch.items.length : 0}
         isBatchActive={bulkBatch?.isActive || false}
       />
 
       {/* Main Investigation Canvas */}
+      <Suspense fallback={null}>
       <main className={`flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         {/* Email Intelligence Card if email mode and active view is not dashboard or batch */}
         {activeView !== 'dashboard' && activeView !== 'intelligence' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
@@ -1095,8 +1054,6 @@ export default function App() {
             results={results}
             onOpenExport={() => setIsExportOpen(true)}
             onViewTable={() => setActiveView('table')}
-            aiApiKey={personalGeminiKey}
-            aiModel={selectedGeminiModel}
             requirement={intelligenceRequirement}
             onRequirementChange={setIntelligenceRequirement}
           />
@@ -1109,16 +1066,12 @@ export default function App() {
             targetType={targetType}
             results={results}
             emailData={emailData}
-            aiProfile={aiProfile}
             onViewGrid={() => setActiveView('grid')}
             onViewTable={() => setActiveView('table')}
-            onViewProfile={() => setActiveView('ai')}
             onViewTerminal={() => setActiveView('terminal')}
             onOpenExport={() => setIsExportOpen(true)}
             onPivotScan={handlePivotScan}
             isScanning={isScanning}
-            onRequestAiProfile={() => setActiveView('ai')}
-            isAiLoading={false}
             bulkBatch={bulkBatch}
             onViewBatch={() => setActiveView('batch')}
             onOpenImport={() => setIsBulkModalOpen(true)}
@@ -1167,18 +1120,6 @@ export default function App() {
           </div>
         )}
 
-        {/* View: AI Analyst Workspace */}
-        {(activeView === 'ai' || activeView === 'profile') && (
-          <AiWorkspace
-            target={target}
-            results={results}
-            apiKey={personalGeminiKey}
-            model={selectedGeminiModel}
-            requirement={intelligenceRequirement}
-            onOpenConfig={() => setIsGeminiModalOpen(true)}
-          />
-        )}
-
         {/* View: Live Terminal Console */}
         {activeView === 'terminal' && (
           <TerminalLogs
@@ -1220,27 +1161,6 @@ export default function App() {
         currentConcurrency={concurrency}
       />
 
-      {/* Gemini AI Personal Key & Configuration Modal */}
-      <GeminiConfigModal
-        isOpen={isGeminiModalOpen}
-        onClose={() => setIsGeminiModalOpen(false)}
-        personalKey={personalGeminiKey}
-        selectedModel={selectedGeminiModel}
-        onSavePersonalKey={(key, model) => {
-          setPersonalGeminiKey(key);
-          setSelectedGeminiModel(model);
-          if (key) {
-            localStorage.setItem('mineiro_gemini_key', key);
-            localStorage.setItem('mineiro_gemini_model', model);
-            addLog(`Configured personal Gemini AI key [Model: ${model}].`, 'success');
-          } else {
-            localStorage.removeItem('mineiro_gemini_key');
-            localStorage.setItem('mineiro_gemini_model', model);
-            addLog(`Cleared personal Gemini AI key. Using server-side fallback.`, 'info');
-          }
-        }}
-      />
-
       {/* Export Dossier Modal (JSON, CSV, TXT, PDF) */}
       <IntelligenceExportModal
         isOpen={isExportOpen}
@@ -1255,7 +1175,6 @@ export default function App() {
         target={target}
         targetType={targetType}
         results={results}
-        aiProfile={aiProfile}
         emailData={emailData}
       />
 
@@ -1291,14 +1210,13 @@ export default function App() {
             <span className="text-[#A3A3A3]">LARGE LOCAL PLATFORM CATALOG</span>
             <span className="text-[#737373]">•</span>
             <span className="text-[#A3A3A3]">WAF & ANTI-BOT GUARD</span>
-            <span className="text-[#737373]">•</span>
-            <span className="text-[#A3A3A3]">EVIDENCE-BOUNDED AI COPILOT</span>
           </div>
           <div className="text-[10px] text-[#737373]">
             OSINT INVESTIGATION WORKBENCH · EVIDENCE · CORRELATION · REPORTING
           </div>
         </div>
       </footer>
+      </Suspense>
     </div>
     </ToastProvider>
   );

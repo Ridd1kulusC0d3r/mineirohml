@@ -141,11 +141,6 @@ Intelligence Assessment
   +--> collection plan
   |
   +--> Local Report Export
-  |
-  +--> Optional AI Analyst Copilot
-          |
-          +--> AI_SYNTHESIZED
-          +--> never raises factual confidence
 ```
 
 ### Progressive scan
@@ -270,10 +265,7 @@ Toda aresta mantém `confidence`, `provenance`, `evidenceId` e, quando disponív
 ```text
 PRIMARY ──────> EVIDENCE ──────> DERIVED ASSESSMENT
 EXTERNAL ─────> EVIDENCE ──────> DERIVED ASSESSMENT
-AI_SYNTHESIZED ----------------> HYPOTHESIS ONLY
 ```
-
-AI synthesis nunca altera automaticamente confidence factual.
 
 ### Integrity
 

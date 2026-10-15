@@ -21,7 +21,6 @@ export default {
       ["Caso", "Conjunto de snapshots imutáveis guardados no navegador."],
       ["Diff", "Comparação entre duas coletas: NEW, DISAPPEARED, CHANGED, UNCHANGED, CONFIDENCE_UP e CONFIDENCE_DOWN."],
       ["STIX 2.1", "Formato padrão para troca de inteligência de ameaças."],
-      ["AI_SYNTHESIZED", "Marca de conteúdo gerado ou resumido por IA."],
     ] },
   ],
 };

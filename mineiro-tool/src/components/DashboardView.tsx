@@ -4,7 +4,6 @@ import {
   AlertTriangle, 
   Clock, 
   Activity, 
-  Sparkles, 
   Download, 
   ExternalLink, 
   Copy, 
@@ -14,14 +13,13 @@ import {
   ArrowRight,
   Fingerprint,
   Mail,
-  BrainCircuit,
   Globe,
   Network,
   GitFork,
   Flame,
   ShieldAlert
 } from 'lucide-react';
-import { ScanResult, AiProfileReport, EmailReconData, BulkBatchState, BulkTargetItem } from '../types';
+import { ScanResult, EmailReconData, BulkBatchState, BulkTargetItem } from '../types';
 import type { GraphPivotInvestigation } from '../graph/types';
 import { UNIFIED_DATABASES, CATEGORY_LABELS } from '../data/platforms';
 import { WorldThreatMap } from './WorldThreatMap';
@@ -43,16 +41,12 @@ interface DashboardViewProps {
   targetType: 'username' | 'email';
   results: ScanResult[];
   emailData: EmailReconData | null;
-  aiProfile: AiProfileReport | null;
   onViewGrid: () => void;
   onViewTable: () => void;
-  onViewProfile: () => void;
   onViewTerminal: () => void;
   onOpenExport: () => void;
   onPivotScan?: (newTarget: string) => Promise<GraphPivotInvestigation>;
   isScanning: boolean;
-  onRequestAiProfile?: () => void;
-  isAiLoading?: boolean;
   bulkBatch?: BulkBatchState | null;
   onViewBatch?: () => void;
   onOpenImport?: () => void;
@@ -66,16 +60,12 @@ export function DashboardView({
   targetType,
   results,
   emailData,
-  aiProfile,
   onViewGrid,
   onViewTable,
-  onViewProfile,
   onViewTerminal,
   onOpenExport,
   onPivotScan,
   isScanning,
-  onRequestAiProfile,
-  isAiLoading = false,
   bulkBatch,
   onViewBatch,
   onOpenImport,
@@ -179,7 +169,7 @@ export function DashboardView({
               </span>
             </div>
             <p className="text-xs text-[#A3A3A3]">
-              Evidence-oriented synthesis across the local Mineiro Registry and optional analysis modules.
+              Evidence-oriented synthesis across the local Mineiro Registry.
             </p>
           </div>
 
@@ -193,15 +183,6 @@ export function DashboardView({
             >
               <Download className="w-3.5 h-3.5" />
               Download Dossier
-            </button>
-            <button
-              id="dashboard-ai-btn"
-              type="button"
-              onClick={onViewProfile}
-              className="px-3 py-2 border border-[#2A2A2A] bg-[#050505] text-[#F5F5F5] hover:text-[#FFFFFF] hover:border-[#737373] text-xs uppercase flex items-center gap-1.5 transition-colors rounded-sm"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#FFFFFF]" />
-              AI Profile
             </button>
           </div>
         </div>
@@ -413,7 +394,6 @@ export function DashboardView({
               results={results}
               target={target}
               emailData={emailData}
-              aiProfile={aiProfile}
               onPivotScan={onPivotScan}
             />
           )}
@@ -441,7 +421,6 @@ export function DashboardView({
               target={target}
               targetType={targetType}
               emailData={emailData}
-              aiProfile={aiProfile}
               onPivotScan={onPivotScan}
             />
           )}
@@ -450,7 +429,6 @@ export function DashboardView({
             <RiskMatrix2x2
               results={results}
               target={target}
-              aiProfile={aiProfile}
               onPivotScan={onPivotScan}
             />
           )}
@@ -461,80 +439,6 @@ export function DashboardView({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column (2 cols): Category Distribution & Discovered Hits */}
         <div className="lg:col-span-2 space-y-6">
-          {/* AI Intelligence Dossier Brief if available, or on-demand trigger */}
-          {aiProfile ? (
-            <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-3 font-mono rounded-md">
-              <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
-                <div className="flex items-center gap-2">
-                  <BrainCircuit className="w-4 h-4 text-[#FFFFFF]" />
-                  <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
-                    AI Intelligence Dossier Summary
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                    {aiProfile.modelUsed || 'Gemini'}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={onViewProfile}
-                  className="text-[11px] text-[#FFFFFF] hover:underline flex items-center gap-1"
-                >
-                  Full Dossier <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-              <p className="text-xs text-[#F5F5F5] leading-relaxed">
-                {aiProfile.summary}
-              </p>
-              <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
-                <span className="px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                  Archetype: <strong className="text-[#F5F5F5]">{aiProfile.archetype}</strong>
-                </span>
-                <span className="px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                  Exposure: <strong className="text-[#F5F5F5]">{aiProfile.threatLevel}</strong>
-                </span>
-                <span className="px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                  Surface Score: <strong className="text-[#FFFFFF]">{aiProfile.footprintScore} / 100</strong>
-                </span>
-              </div>
-            </div>
-          ) : results.some((r) => r.status === 'found') && !isScanning && onRequestAiProfile ? (
-            <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-4 font-mono space-y-2.5 rounded-md">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 border border-[#2A2A2A] bg-[#050505] flex items-center justify-center shrink-0 rounded-sm">
-                    <Sparkles className="w-4 h-4 text-[#FFFFFF]" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider block">
-                      Psychological & OpSec AI Dossier (On-Demand Mode)
-                    </span>
-                    <span className="text-[11px] text-[#A3A3A3]">
-                      Scan completed. Would you like to synthesize behavioral analysis and exposure risk now?
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={onRequestAiProfile}
-                  disabled={isAiLoading}
-                  className="px-3.5 py-1.5 bg-[#FFFFFF] text-[#050505] font-bold border border-[#FFFFFF] hover:bg-[#FFFFFF]/90 text-xs font-mono flex items-center gap-1.5 shrink-0 transition-colors disabled:opacity-50 uppercase rounded-sm"
-                >
-                  {isAiLoading ? (
-                    <>
-                      <Clock className="w-3.5 h-3.5 animate-spin" />
-                      <span>Synthesizing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-3.5 h-3.5 fill-[#050505]" />
-                      <span>Generate AI Dossier</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          ) : null}
-
           {/* Category Footprint Breakdown */}
           <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-4 rounded-md">
             <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
@@ -854,14 +758,6 @@ export function DashboardView({
               >
                 <div className="font-bold text-[#F5F5F5]">Grid Matrix</div>
                 <div className="text-[10px] text-[#A3A3A3]">Visual cards</div>
-              </button>
-              <button
-                type="button"
-                onClick={onViewProfile}
-                className="p-2.5 border border-[#2A2A2A] hover:border-[#737373] bg-[#050505] text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors text-left rounded-sm"
-              >
-                <div className="font-bold text-[#F5F5F5]">AI Dossier</div>
-                <div className="text-[10px] text-[#A3A3A3]">Threat profile</div>
               </button>
               <button
                 type="button"

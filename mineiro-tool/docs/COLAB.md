@@ -13,15 +13,17 @@ O notebook canônico do Mineiro é:
 Uma execução completa prepara:
 
 ```text
-GitHub main
+GitHub (checkout parcial de mineiro-tool/)
    ↓
 Node.js 22+
    ↓
-npm dependencies
+npm ci
    ↓
 Registry validation
    ↓
-Mineiro server :3000
+build de produção
+   ↓
+Mineiro server :3000 (node dist/server.cjs)
    ↓
 health check
    ↓
@@ -46,7 +48,7 @@ A VM do Colab é temporária. O notebook não transforma Colab em hospedagem per
 
 Define:
 - repositório;
-- branch;
+- branch e subpasta (`mineiro-tool`);
 - diretório;
 - porta;
 - arquivo de log.
@@ -55,16 +57,16 @@ Também mostra a versão do notebook.
 
 ### 2 · Bootstrap
 
-- clona o repositório se necessário;
-- atualiza a branch;
+- clona só a pasta da ferramenta (checkout parcial) ou atualiza a branch;
 - garante Node.js 22+;
-- instala dependências;
-- valida o Registry.
+- instala dependências com `npm ci`;
+- valida o Registry;
+- gera o build de produção (`npm run build`).
 
 ### 3 · Start Mineiro
 
 - encerra uma instância anterior da sessão;
-- inicia `npm run dev`;
+- inicia `node dist/server.cjs` em modo produção (escuta em `127.0.0.1`, sem servidor de desenvolvimento);
 - grava logs em `/content/mineiro-server.log`;
 - espera `/api/health`;
 - exibe a URL do proxy.
@@ -83,32 +85,7 @@ Encerra o processo da sessão.
 
 ## Atualizar uma sessão já aberta
 
-```python
-%cd /content/Mineiro-OSINT-Extractor
-!git checkout main
-!git pull --ff-only
-!npm install --no-audit --no-fund --prefer-offline
-```
-
-Depois execute novamente a célula **Start Mineiro**.
-
-## Host bloqueado
-
-O proxy do Colab usa hosts no domínio:
-
-```text
-*.codatalab-user-runtimes.internal
-```
-
-O Vite do projeto aceita esse domínio de forma restrita. Se aparecer:
-
-```text
-Blocked request. This host is not allowed.
-```
-
-sua sessão provavelmente está com clone antigo. Atualize com `git pull` e reinicie o servidor.
-
-Não configure `allowedHosts: true`.
+Execute novamente as células **Bootstrap** e **Start Mineiro**: o clone é atualizado, o build é refeito e o servidor reinicia.
 
 ## Performance
 
@@ -125,12 +102,6 @@ No Full, o Mineiro usa progressive scan: discovery rápido e validação profund
 ```python
 !tail -n 100 /content/mineiro-server.log
 ```
-
-## Chaves de IA
-
-Não escreva API keys em células que serão compartilhadas.
-
-Use a configuração da aplicação apenas na sua sessão. O Copilot é opcional; o assessment funciona sem IA.
 
 ## Limites
 

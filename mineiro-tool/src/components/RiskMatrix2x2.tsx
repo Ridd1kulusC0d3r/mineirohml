@@ -16,7 +16,7 @@ import {
   Layers,
   ArrowUpRight
 } from 'lucide-react';
-import { ScanResult, AiProfileReport } from '../types';
+import { ScanResult } from '../types';
 import { useToast } from './Toast';
 import { PlatformFavicon } from './PlatformFavicon';
 
@@ -42,7 +42,6 @@ export interface RiskMatrixAccount {
 interface RiskMatrix2x2Props {
   results: ScanResult[];
   target: string;
-  aiProfile?: AiProfileReport | null;
   onPivotScan?: (target: string) => void;
 }
 
@@ -180,7 +179,6 @@ function hashString(str: string): number {
 export function RiskMatrix2x2({
   results,
   target,
-  aiProfile,
   onPivotScan,
 }: RiskMatrix2x2Props) {
   const { showToast } = useToast();

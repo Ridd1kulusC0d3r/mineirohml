@@ -309,14 +309,6 @@ export function exportBatchToJson(batch: BulkBatchState): void {
       startedAt: item.startedAt,
       completedAt: item.completedAt,
       emailRecon: item.emailData,
-      aiProfileSummary: item.aiProfile
-        ? {
-            archetype: item.aiProfile.archetype,
-            threatLevel: item.aiProfile.threatLevel,
-            footprintScore: item.aiProfile.footprintScore,
-            summary: item.aiProfile.summary,
-          }
-        : null,
       foundProfiles: (item.results || [])
         .filter((r) => r.status === 'found')
         .map((r) => ({

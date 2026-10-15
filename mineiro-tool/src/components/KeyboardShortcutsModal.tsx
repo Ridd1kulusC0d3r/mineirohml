@@ -13,7 +13,6 @@ import {
   LayoutDashboard,
   Grid,
   Table,
-  Sparkles,
   Network,
   CornerDownLeft,
   ArrowRight,
@@ -123,15 +122,6 @@ export function KeyboardShortcutsModal({
         label: t.shortcutViewTable || 'Switch to Forensic Audit Table',
         description: 'Dense, forensic table format for rapid analytical audits and URL copying.',
         icon: Table,
-      },
-      {
-        id: 'view-4',
-        category: 'views',
-        keys: ['4'],
-        actionId: 'view-profile',
-        label: t.shortcutViewDossier || 'Switch to Autonomous AI Dossier',
-        description: 'Deep behavioral archetypes, psychological indicators, and risk synthesis.',
-        icon: Sparkles,
       },
       {
         id: 'view-5',

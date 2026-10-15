@@ -6,6 +6,7 @@ O texto de referência é sempre o do repositório original.
 
 - **Guia visual** (`index.html`): a "Linha de Garimpo", um diagrama isométrico com sete etapas (faça, decida, evite), laboratórios clicáveis e um mapa de fluxos.
 - **Documentação** (`docs/`): instalação, primeiro scan, presets, Intelligence View, grafo, exportação, fluxo do analista, como o Mineiro decide, detectores, API e segurança, glossário, FAQ e solução de problemas.
+- **Ferramenta** (`mineiro-tool/`): cópia refatorada do Mineiro v1.7.0, sem integrações de IA. Veja `mineiro-tool/LEIA-ME-HML.md`.
 - Tudo é HTML, CSS e JS estáticos. Sem backend e sem chamadas a plataformas: as demonstrações são simulações didáticas.
 
 ## Publicar no GitHub Pages

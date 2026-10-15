@@ -1,4 +1,4 @@
-import { CachedInvestigation, ScanResult, EmailReconData, AiProfileReport, ScanPreset, InvestigationSnapshot } from '../types';
+import { CachedInvestigation, ScanResult, EmailReconData, ScanPreset, InvestigationSnapshot } from '../types';
 
 const STORAGE_KEY = 'mineiro_cached_scans_v1';
 const MAX_CACHED_SCANS = 5;
@@ -61,7 +61,6 @@ export function saveInvestigationToCache(payload: {
   targetType: 'username' | 'email';
   results: ScanResult[];
   emailData: EmailReconData | null;
-  aiProfile: AiProfileReport | null;
   preset: ScanPreset;
   foundCount: number;
   uncertainCount: number;
@@ -85,7 +84,6 @@ export function saveInvestigationToCache(payload: {
       formattedTime: formatInvestigationTimestamp(nowIso),
       results: payload.results || [],
       emailData: payload.emailData,
-      aiProfile: payload.aiProfile,
       preset: payload.preset,
       foundCount: payload.foundCount,
       uncertainCount: payload.uncertainCount,
@@ -124,7 +122,7 @@ export function saveInvestigationToCache(payload: {
 }
 
 /**
- * Update an existing cached investigation with new metadata (e.g. when AI profile completes later)
+ * Update an existing cached investigation with new metadata (e.g. when a snapshot is taken later)
  */
 export function updateInvestigationInCache(
   target: string,
@@ -231,7 +229,6 @@ export async function takeInvestigationSnapshot(payload: {
   targetType: 'username' | 'email';
   results: ScanResult[];
   emailData?: EmailReconData | null;
-  aiProfile?: AiProfileReport | null;
   preset?: ScanPreset;
   foundCount?: number;
   uncertainCount?: number;
@@ -259,9 +256,6 @@ export async function takeInvestigationSnapshot(payload: {
     `VERIFIED_COUNT=${verifiedCount}`,
     `UNCERTAIN_COUNT=${uncertainCount}`,
     `TOTAL_PLATFORMS=${totalPlatforms}`,
-    `AI_ARCHETYPE=${payload.aiProfile?.archetype || 'N/A'}`,
-    `THREAT_LEVEL=${payload.aiProfile?.threatLevel || 'N/A'}`,
-    `FOOTPRINT_SCORE=${payload.aiProfile?.footprintScore ?? 'N/A'}`,
     `EMAIL_HASH=${payload.emailData?.hash || 'N/A'}`,
     `FINGERPRINTS=${verifiedFingerprints}`,
   ].join('|');
@@ -279,8 +273,6 @@ export async function takeInvestigationSnapshot(payload: {
     `Verified Hits:    ${verifiedCount}`,
     `Uncertain / WAF:  ${uncertainCount}`,
     `Scope Probed:     ${totalPlatforms}`,
-    `Archetype:        ${payload.aiProfile?.archetype || 'Standard Moniker Profile'}`,
-    `Threat Level:     ${payload.aiProfile?.threatLevel || 'Evaluated'}`,
     `Summary SHA256:   ${summaryHash}`,
     `Integrity Seal:   ${signature}`,
     `Status:           LOCAL INTEGRITY SNAPSHOT / SHA-256`,
@@ -297,9 +289,6 @@ export async function takeInvestigationSnapshot(payload: {
     verifiedCount,
     uncertainCount,
     totalPlatforms,
-    aiArchetype: payload.aiProfile?.archetype,
-    threatLevel: payload.aiProfile?.threatLevel,
-    footprintScore: payload.aiProfile?.footprintScore,
     summaryBlockText,
   };
 

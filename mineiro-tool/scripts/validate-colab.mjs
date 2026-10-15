@@ -28,6 +28,8 @@ for (const token of required) {
 
 const forbidden = [
   'MINEIRO_ENABLE_LEGACY_PROFILE=1',
+  'GEMINI',
+  'npm run dev',
   'allowedHosts: true',
 ];
 

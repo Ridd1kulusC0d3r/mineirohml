@@ -9,7 +9,6 @@ import {
   Layers, 
   Check, 
   X, 
-  Sparkles, 
   Clock, 
   Gauge, 
   Settings2,
@@ -77,14 +76,14 @@ export function ModularScanModal({
   };
 
   const handleSave = () => {
-    onSaveConfig({ ...localConfig, enableAutoAiProfile: false });
+    onSaveConfig(localConfig);
     onClose();
   };
 
   const handleStartNow = () => {
     onSaveConfig(localConfig);
     if (onStartScanWithConfig) {
-      onStartScanWithConfig({ ...localConfig, enableAutoAiProfile: false });
+      onStartScanWithConfig(localConfig);
     }
     onClose();
   };
@@ -164,7 +163,7 @@ export function ModularScanModal({
                   </p>
                 </div>
                 <div className="mt-2 text-[10px] text-neutral-500 flex items-center gap-2">
-                  <span>20 targets</span> • <span>Turbo (16x)</span> • <span>On-Demand AI</span>
+                  <span>20 targets</span> • <span>Turbo (16x)</span>
                 </div>
               </button>
 
@@ -189,11 +188,11 @@ export function ModularScanModal({
                     </span>
                   </div>
                   <p className="text-[11px] text-neutral-400 leading-relaxed">
-                    Top 50 platforms with Mineiro Guard WAF heuristic checks and automatic AI synthesis.
+                    Top 50 platforms with Mineiro Guard WAF heuristic checks.
                   </p>
                 </div>
                 <div className="mt-2 text-[10px] text-neutral-500 flex items-center gap-2">
-                  <span>50 targets</span> • <span>WAF Deep</span> • <span>Auto AI</span>
+                  <span>50 targets</span> • <span>WAF Deep</span>
                 </div>
               </button>
 
@@ -489,45 +488,7 @@ export function ModularScanModal({
               </label>
             </div>
 
-            {/* Module 4: Gemini AI Intelligence Dossier Profiler */}
-            <div className="p-4 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 border border-neutral-800 bg-neutral-900 flex items-center justify-center text-white text-xs">
-                  4
-                </div>
-                <div>
-                  <span className="font-bold text-white text-xs uppercase flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-neutral-400" />
-                    Module 4: AI Intelligence Dossier (Gemini)
-                  </span>
-                  <p className="text-[11px] text-neutral-400">
-                    <strong className="text-neutral-300">Disable to accelerate quick scans!</strong> When disabled, the AI dossier can still be generated on-demand anytime from the dashboard.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLocalConfig({
-                      ...localConfig,
-                      preset: 'custom',
-                      enableAutoAiProfile: !localConfig.enableAutoAiProfile,
-                    });
-                  }}
-                  className={`px-2.5 py-1 text-[11px] border transition-colors ${
-                    localConfig.enableAutoAiProfile
-                      ? 'bg-neutral-950 border-neutral-600 text-neutral-200'
-                      : 'bg-neutral-900 border-neutral-700 text-neutral-400 hover:text-white'
-                  }`}
-                >
-                  'AI Copilot · On demand'
-                </button>
-              </div>
-            </div>
-
-            {/* Module 5: Concurrency & Performance Engine */}
+            {/* Module 4: Concurrency & Performance Engine */}
             <div className="p-4 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -537,7 +498,7 @@ export function ModularScanModal({
                   <div>
                     <span className="font-bold text-white text-xs uppercase flex items-center gap-1.5">
                       <Cpu className="w-3.5 h-3.5 text-neutral-400" />
-                      Module 5: Network Concurrency & Latency Engine
+                      Module 4: Network Concurrency & Latency Engine
                     </span>
                     <span className="text-[11px] text-neutral-400">
                       Adjust network concurrency to balance speed and rate-limiting stealth
@@ -590,12 +551,6 @@ export function ModularScanModal({
                 <span className="font-bold text-neutral-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
                   {estimateSeconds()}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-neutral-500">AI:</span>
-                <span className={localConfig.enableAutoAiProfile ? 'text-neutral-400' : 'text-neutral-400'}>
-                  'Copilot on demand'
                 </span>
               </div>
             </div>

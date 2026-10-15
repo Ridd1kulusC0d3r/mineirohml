@@ -6,7 +6,6 @@ import {
   Check, 
   AtSign, 
   Mail, 
-  Sparkles, 
   HardDrive, 
   Clock, 
   Zap, 
@@ -228,7 +227,7 @@ export function InvestigationHistoryModal({
                 No investigations cached in local storage
               </p>
               <p className="text-neutral-500 text-[11px] max-w-md mx-auto leading-relaxed">
-                Once you execute any successful scan, complete intelligence results (verified hits, latency benchmarks, AI dossier, and email recon) are automatically cached here for instant restoration.
+                Once you execute any successful scan, complete intelligence results (verified hits, latency benchmarks, and email recon) are automatically cached here for instant restoration.
               </p>
             </div>
           ) : (
@@ -304,13 +303,6 @@ export function InvestigationHistoryModal({
                         <Clock className="w-3 h-3 text-neutral-500" />
                         {item.formattedTime}
                       </span>
-
-                      {item.aiProfile && (
-                        <span className="text-[10px] text-neutral-400 flex items-center gap-1 bg-neutral-950/40 border border-neutral-800/60 px-1.5 py-0.2">
-                          <Sparkles className="w-2.5 h-2.5" />
-                          AI Dossier Cached
-                        </span>
-                      )}
                     </div>
                   </div>
 

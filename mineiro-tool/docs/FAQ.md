@@ -27,12 +27,6 @@ Não. Os 7.880 são checks lógicos possíveis. Vários são extraídos de uma �
 ## Posso rodar no Colab?
 Sim. Use o notebook oficial em `notebooks/Mineiro_Username_Intelligence_Colab.ipynb`.
 
-## O Copilot é obrigatório?
-Não. Todo assessment determinístico funciona sem IA.
-
-## O Copilot pode elevar confidence?
-Não sozinho. Saída de IA é marcada `AI_SYNTHESIZED`.
-
 ## O SHA-256 prova autoria?
 Não. Ele verifica integridade do payload exportado.
 

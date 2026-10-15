@@ -25,7 +25,6 @@ npm run lint
 | build falha | dependência/cache | remova `node_modules` e reinstale |
 | notebook abre, UI não | servidor não saudável | rode health check |
 | relatório sem SHA-256 | Web Crypto indisponível | use navegador moderno |
-| IA não responde | chave/modelo/configuração | use Copilot sem chave custom ou revise configuração |
 | Full Scan demora | cobertura ampla | use Progressive Full apenas quando necessário |
 
 ## Colab: atualização limpa

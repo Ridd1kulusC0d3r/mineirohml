@@ -3,7 +3,7 @@ import type { Category, ScanResult } from '../types';
 export type ConfidenceBand = 'HIGH' | 'MODERATE' | 'LOW';
 export type PriorityBand = 'HIGH' | 'MEDIUM' | 'LOW';
 export type SourceQualityGrade = 'A' | 'B' | 'C' | 'D' | 'E';
-export type ProvenanceType = 'PRIMARY' | 'DERIVED' | 'EXTERNAL' | 'AI_SYNTHESIZED';
+export type ProvenanceType = 'PRIMARY' | 'DERIVED' | 'EXTERNAL';
 
 export type IntelligenceRequirement =
   | 'username_presence'

@@ -20,7 +20,7 @@ import {
   Check,
   RotateCcw
 } from 'lucide-react';
-import { ScanResult, EmailReconData, AiProfileReport, Category } from '../types';
+import { ScanResult, EmailReconData, Category } from '../types';
 import { 
   CATEGORY_COLORS, 
   CATEGORY_BADGES, 
@@ -36,7 +36,6 @@ interface CategoryHeatMapProps {
   target: string;
   targetType: 'username' | 'email';
   emailData: EmailReconData | null;
-  aiProfile?: AiProfileReport | null;
   onPivotScan?: (newTarget: string) => void;
   onSelectCategory?: (category: string) => void;
 }
@@ -52,7 +51,7 @@ export interface CategoryMetrics {
   avgResponseMs: number;
   // Intensity facets (0 to 100)
   presenceDensity: number;      // % of category platforms verified
-  profileCompleteness: number;  // AI / metadata richness
+  profileCompleteness: number;  // metadata richness
   responseSpeedScore: number;   // Server latency / responsiveness index
   exposureThreatScore: number;  // Privacy and attack-surface weight
   linkageCorrelation: number;   // Cross-service handle correlation
@@ -134,7 +133,6 @@ export function CategoryHeatMap({
   target,
   targetType,
   emailData,
-  aiProfile,
   onPivotScan,
   onSelectCategory,
 }: CategoryHeatMapProps) {
@@ -238,7 +236,6 @@ export function CategoryHeatMap({
       if (effectiveFoundCount > 0) {
         // High correlation if found on developer + security + email
         linkageCorrelation = Math.min(100, Math.round(50 + (effectiveFoundCount * 10)));
-        if (aiProfile?.archetype && catKey === 'developer') linkageCorrelation = Math.min(100, linkageCorrelation + 15);
       }
 
       // 6. Composite Activity & Threat Intensity (Weighted Formula)
@@ -273,7 +270,7 @@ export function CategoryHeatMap({
     });
 
     return items;
-  }, [results, emailData, aiProfile]);
+  }, [results, emailData]);
 
   // Filter and Sort Categories
   const filteredAndSortedCategories = useMemo(() => {

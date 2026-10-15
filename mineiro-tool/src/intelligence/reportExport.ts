@@ -88,7 +88,6 @@ const exportMessages = {
     source:'Source', findings:'findings', strong:'strong', weighted:'weighted', alternative:'ALTERNATIVE',
     supportingLabel:'Supporting', contradictoryLabel:'Contradictory', none:'none', high:'High', medium:'Medium', low:'Low',
     integrityNote:'SHA-256 is recorded in the export manifest over the payload before manifest insertion.',
-    aiRule:'AI_SYNTHESIZED output never raises factual confidence by itself.',
     methodologyNote:'Same handle is a lead, not identity proof.',
   },
   pt: {
@@ -107,7 +106,6 @@ const exportMessages = {
     source:'Fonte', findings:'achados', strong:'fortes', weighted:'ponderado', alternative:'ALTERNATIVA',
     supportingLabel:'Suporte', contradictoryLabel:'Contraditório', none:'nenhum', high:'Alta', medium:'Média', low:'Baixa',
     integrityNote:'O SHA-256 é registrado no manifesto de exportação sobre o payload antes da inserção do manifesto.',
-    aiRule:'A saída AI_SYNTHESIZED nunca eleva sozinha a confiança factual.',
     methodologyNote:'Mesmo username é um lead, não prova de identidade.',
   },
   es: {
@@ -126,7 +124,6 @@ const exportMessages = {
     source:'Fuente', findings:'hallazgos', strong:'fuertes', weighted:'ponderado', alternative:'ALTERNATIVA',
     supportingLabel:'Soporte', contradictoryLabel:'Contradictorio', none:'ninguno', high:'Alta', medium:'Media', low:'Baja',
     integrityNote:'El SHA-256 se registra en el manifest de exportación sobre el payload antes de insertar el manifest.',
-    aiRule:'La salida AI_SYNTHESIZED nunca eleva por sí sola la confianza factual.',
     methodologyNote:'El mismo username es un lead, no una prueba de identidad.',
   },
 } as const;
@@ -198,7 +195,6 @@ export function buildIntelligenceBundle(
     } : undefined,
     provenance: sections.provenance ? {
       graph: assessment.provenanceGraph,
-      rule: ex(language, 'aiRule'),
     } : undefined,
     technicalAppendix: sections.technicalAppendix ? assessment.technicalAppendix : undefined,
     integritySnapshot: sections.integritySnapshot ? {
@@ -279,7 +275,7 @@ export function generateIntelligenceMarkdown(
   if (sections.collectionPlan) lines.push(`## 16 ${ex(language, 'plan')}`,'',...a.collectionPlan.map((x,i)=>`${i+1}. ${x}`),'',`**${ex(language, 'stop')}:** ${a.stopCondition}`,'');
   if (sections.reliabilityHeatmap) lines.push(`## 17 ${ex(language, 'reliability')}`,'',...a.sourceQualityNotes.map(x=>`- ${x}`),'');
   if (sections.methodology) lines.push(`## 18 ${ex(language, 'methodology')}`,'','COLLECTION → EVIDENCE → CORRELATION → HYPOTHESES → CONTRADICTIONS → ASSESSMENT → PIVOTS → COLLECTION PLAN','');
-  if (sections.provenance) lines.push(`## 19 ${ex(language, 'provenance')}`,'',`Nodes: ${a.provenanceGraph.nodes.length} · edges: ${a.provenanceGraph.edges.length}`,'',ex(language, 'aiRule'),'');
+  if (sections.provenance) lines.push(`## 19 ${ex(language, 'provenance')}`,'',`Nodes: ${a.provenanceGraph.nodes.length} · edges: ${a.provenanceGraph.edges.length}`,'');
   if (sections.technicalAppendix) lines.push(`## 20 ${ex(language, 'appendix')}`,'',`Detectors: ${a.technicalAppendix.detectorCount}`,`Evidence checks: ${a.technicalAppendix.evidenceChecksAvailable}`,'');
   if (sections.integritySnapshot) lines.push(`## 21 ${ex(language, 'integrity')}`,'',ex(language, 'integrityNote'),'');
   lines.push('---',ex(language, 'generated'));
@@ -327,7 +323,7 @@ export function generateIntelligenceHtml(
   if(sections.collectionPlan) blocks.push(section(`16 · ${ex(language, 'plan').toUpperCase()}`,ex(language, 'plan'),`<ol>${a.collectionPlan.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ol><div class="stop"><b>STOP CONDITION</b><p>${escapeHtml(a.stopCondition)}</p></div>`));
   if(sections.reliabilityHeatmap) blocks.push(section(`17 · ${ex(language, 'reliability').toUpperCase()}`,ex(language, 'reliability'),`<div class="cards">${a.reliabilityHeatmap.map(x=>`<article class="card"><b>${escapeHtml(x.category)}</b><p>High ${x.high} · Medium ${x.medium} · Low ${x.low}</p></article>`).join('')}</div>`));
   if(sections.methodology) blocks.push(section(`18 · ${ex(language, 'methodology').toUpperCase()}`,ex(language, 'methodology'),'<p>COLLECTION → EVIDENCE → CORRELATION → HYPOTHESES → CONTRADICTIONS → ASSESSMENT → PIVOTS → COLLECTION PLAN</p>'));
-  if(sections.provenance) blocks.push(section(`19 · ${ex(language, 'provenance').toUpperCase()}`,ex(language, 'provenance'),`<p>${a.provenanceGraph.nodes.length} nodes · ${a.provenanceGraph.edges.length} derivation edges.</p><p>AI_SYNTHESIZED output never raises factual confidence by itself.</p>`));
+  if(sections.provenance) blocks.push(section(`19 · ${ex(language, 'provenance').toUpperCase()}`,ex(language, 'provenance'),`<p>${a.provenanceGraph.nodes.length} nodes · ${a.provenanceGraph.edges.length} derivation edges.</p>`));
   if(sections.technicalAppendix) blocks.push(section(`20 · ${ex(language, 'appendix').toUpperCase()}`,ex(language, 'appendix'),`<pre>${escapeHtml(JSON.stringify(a.technicalAppendix,null,2))}</pre>`));
   if(sections.integritySnapshot) blocks.push(section(`21 · ${ex(language, 'integrity').toUpperCase()}`,ex(language, 'integrity'),'<p>SHA-256 is recorded in the export manifest over the payload before manifest insertion.</p>'));
 

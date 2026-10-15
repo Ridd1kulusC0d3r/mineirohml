@@ -87,32 +87,14 @@ A coleta deve parar quando novos achados não alteram materialmente:
 - gaps;
 - confiança.
 
-## IA
-
-A IA pode:
-- resumir;
-- ordenar evidências;
-- propor hipóteses alternativas;
-- destacar contradições;
-- sugerir pivôs;
-- reformular perguntas analíticas.
-
-A IA não pode:
-- transformar inferência em fato;
-- elevar automaticamente confidence;
-- concluir identidade por username;
-- inferir atributos sensíveis;
-- classificar criminalidade sem evidência explícita e apropriada.
-
 ## Proveniência
 
 Tipos conceituais:
 - PRIMARY: observado diretamente;
 - DERIVED: calculado deterministicamente;
-- EXTERNAL: importado de outra fonte;
-- AI_SYNTHESIZED: produzido pelo copiloto.
+- EXTERNAL: importado de outra fonte.
 
-Toda saída de IA deve continuar distinguível das camadas observadas e derivadas.
+Inferências devem continuar distinguíveis das camadas observadas.
 
 
 ## Intelligence Requirements
