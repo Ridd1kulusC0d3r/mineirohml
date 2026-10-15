@@ -61,7 +61,7 @@ const THEME_BOOT = `<script>try{var t=localStorage.getItem("mhml-theme");if(t)do
 const THEME_BTN = `<button type="button" class="themebtn" data-theme-toggle aria-label="Alternar tema claro e escuro">◐ Tema</button>`;
 const THEME_JS = `<script>document.querySelectorAll("[data-theme-toggle]").forEach(function(b){b.onclick=function(){var r=document.documentElement,c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"),n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("mhml-theme",n)}catch(e){}}})</script>`;
 const head = (title, desc, root, css2) => `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>${esc(title)}</title><meta name="description" content="${esc(desc)}">${FAVICON}${FONTS}${THEME_BOOT}<link rel="stylesheet" href="${root}assets/${css2}"></head>`;
-const topbar = (root, current, search) => `<a class="skip" href="#main">Pular para o conteúdo</a><header class="top"><a class="brand" href="${root}index.html">Mineiro <span>hml</span></a>${search ? `<div class="search"><input id="q" type="search" placeholder="Buscar na documentação" aria-label="Buscar na documentação" autocomplete="off"><ul id="results" class="results" hidden></ul></div>` : ""}<nav aria-label="Principal"><a href="${root}index.html"${current === "guia" ? ' aria-current="page"' : ""}>Guia imersivo</a><a href="${root}docs/index.html"${current === "docs" ? ' aria-current="page"' : ""}>Documentação</a><a href="${C.REPO}" target="_blank" rel="noopener">Repositório original ↗</a>${THEME_BTN}</nav></header>`;
+const topbar = (root, current, search) => `<a class="skip" href="#main">Pular para o conteúdo</a><header class="top"><a class="brand" href="${root}index.html">Mineiro <span>hml</span></a>${search ? `<div class="search"><input id="q" type="search" placeholder="Buscar na documentação" aria-label="Buscar na documentação" autocomplete="off"><ul id="results" class="results" hidden></ul></div>` : ""}<nav aria-label="Principal"><a href="${root}index.html"${current === "guia" ? ' aria-current="page"' : ""}>Guia visual</a><a href="${root}docs/index.html"${current === "docs" ? ' aria-current="page"' : ""}>Documentação</a><a href="${C.REPO}" target="_blank" rel="noopener">Repositório original ↗</a>${THEME_BTN}</nav></header>`;
 const FOOT = `<footer class="foot"><span>Ambiente de homologação (hml). Material de estudo e documentação em pt-BR baseado no <a href="${C.REPO}" target="_blank" rel="noopener">Mineiro-OSINT-Extractor</a> (licença MIT no código original).</span><span>As demonstrações interativas são simulações didáticas. Nenhuma plataforma é consultada.</span></footer>`;
 
 // ---------------------------------------------------------------- docs
@@ -105,23 +105,22 @@ writeFileSync(join(OUT, "assets/search.json"), JSON.stringify(search));
 
 // ---------------------------------------------------------------- guia imersivo (index.html)
 const plate = k.plateHtml({
-  fig: "Fig 1", title: "Linha de Garimpo Mineiro", hint: "Setas ← → trocam de galeria", readout: "Linha de Garimpo Mineiro · visão geral",
+  fig: "Fig 1", title: "Linha de Garimpo Mineiro", hint: "Setas ← → trocam de etapa", readout: "Linha de Garimpo Mineiro · visão geral",
   keys: [{ mark: "lit", label: "O que está em foco agora" }, { mark: "raised", label: "Estações = etapas do pipeline" }],
-  caption: "O vagonete leva a pepita (o identificador) por sete galerias que espelham o pipeline do Mineiro: requisito, coleta, baseline, avaliação, correlação e relatório.",
+  caption: "Cada estação é uma etapa do pipeline: requisito, coleta, baseline, avaliação, correlação e relatório.",
   body: `<div class="iso-stage">${F.figure()}</div>`,
 });
-const index = head("Linha de Garimpo Mineiro · " + SITE, "Guia isométrico e interativo para usar o Mineiro Username Intelligence: sete galerias com história, laboratórios clicáveis e um mapa de fluxos.", "./", "guia.css") +
+const index = head("Linha de Garimpo Mineiro · " + SITE, "Guia direto para usar o Mineiro Username Intelligence: sete etapas, o que fazer, o que decidir e o que evitar, com figuras isométricas.", "./", "guia.css") +
 `<body>${topbar("./", "guia", false)}
 <div class="iso" data-theme="dark" id="top"><main id="main" style="display:contents">
-<header class="hero"><span class="kick">Guia isométrico · Mineiro Username Intelligence</span><h1>Linha de Garimpo</h1>
-<p class="lead">Uma pepita (um nome de usuário) entra pela boca da mina e atravessa sete galerias. Cada galeria é uma etapa real da ferramenta. Faça uma coisa de cada vez, no seu ritmo.</p>
-<div class="prog"><div class="track" id="progress" role="progressbar" aria-label="Progresso"></div><span id="progress-t"></span></div></header>
-<div class="app"><div class="left">${plate}<nav id="rail" aria-label="Galerias"></nav></div><article id="panel" aria-live="polite"></article></div>
-<section class="sec" id="mapa"><span class="kick">Mapa de Fluxos</span><h2>Todos os caminhos num só mapa</h2>
-<p class="lead">Escolha um fluxo e percorra passo a passo. Clique em qualquer caixa para voltar à galeria dela.</p>
+<header class="hero"><span class="kick">Guia de uso · Mineiro Username Intelligence</span><h1>Linha de Garimpo</h1>
+<p class="lead">Sete etapas, na ordem do pipeline. Em cada uma: o que fazer, o que decidir e o que evitar.</p></header>
+<div class="app"><div class="left">${plate}<nav id="rail" aria-label="Etapas"></nav></div><article id="panel" aria-live="polite"></article></div>
+<section class="sec" id="mapa"><span class="kick">Mapa de Fluxos</span><h2>Fluxos</h2>
+<p class="lead">Escolha um fluxo. Clique numa caixa para abrir a etapa dela.</p>
 <div class="flowtabs" role="tablist">${C.FLOWS.map((f) => `<button type="button" role="tab" class="tab" data-flow="${f.id}" aria-selected="false">${esc(f.nome)}</button>`).join("")}<button type="button" class="btn" id="walk">▶ Percorrer</button></div>
 <p id="flow-desc" class="flow-desc"></p><div class="flowwrap" id="flow-box"></div></section>
-<section class="sec" id="bolso"><span class="kick">Bolso do garimpeiro</span><h2>Cola rápida</h2><div class="cheats" id="cheat"></div>
+<section class="sec" id="bolso"><span class="kick">Cola rápida</span><h2>Comandos</h2><div class="cheats" id="cheat"></div>
 <div class="foot"><p>Simulação didática: nenhuma plataforma é consultada aqui. Valores, resultados e posições das barras são ilustrativos. A documentação completa está em <a href="docs/index.html">docs</a> e o texto de referência no <a href="${C.REPO}" target="_blank" rel="noopener">repositório original</a>.</p><p>O Mineiro não atribui nota a pessoas. Ele organiza observações públicas, evidências e lacunas para que um analista decida.</p></div></section>
 </main></div>
 <script>(function(){var e=document.documentElement.getAttribute("data-theme");document.getElementById("top").dataset.theme=e||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")})()</script>

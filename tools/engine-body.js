@@ -4,7 +4,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const fmt = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/`(.+?)`/g, "<code>$1</code>");
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const still = matchMedia("(prefers-reduced-motion: reduce)");
+const still = { matches: true }; // sem animação: estados mudam direto
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 
 // ---- tema: segue o viewer (data-theme na raiz ou prefers-color-scheme)
@@ -53,7 +53,7 @@ const cur = { cart: STOPS.start, cx: W / 2, cy: H / 2, z: 1, sel: SEL_ANGLES[0],
 const tgt = { ...cur };
 const tau = { cart: 0.55, cx: 0.7, cy: 0.7, z: 0.7, ram: 0.22, bridge: 0.2, gate: 0.3, seal: 0.2 };
 const flags = { lantern: false, led: false };
-let last = 0, frame = 0, visible = true, demoOn = false;
+let last = 0, frame = 0, visible = true;
 
 function draw() {
   el.cart.setAttribute("transform", translateAlong(P, [cur.cart, 0, 0]));
@@ -107,125 +107,77 @@ function setNodes(set, edgeSet) {
   });
 }
 
-// ---- estado de progresso
+// ---- painel por etapa
 let ch = 0, token = 0;
-const done = new Set(JSON.parse(store.get("mineiro-done") || "[]").filter((n) => n >= 0 && n < CHAPTERS.length));
-const saveDone = () => store.set("mineiro-done", JSON.stringify([...done]));
-const stepAt = {};
 const panel = $("#panel");
 const rail = $("#rail");
-const bar = $("#progress");
+const complete = () => {};
+let instTab = "pip", preset = "standard";
+const fmtOn = [false, true, false, false, false];
+const FORMATS = ["HTML", "JSON", "Markdown", "CSV", "STIX 2.1"];
+const SCEN = SCENARIOS;
 
 function renderRail() {
-  rail.innerHTML = CHAPTERS.map((c, i) => '<button type="button" class="rail-b" data-go="' + i + '" aria-current="' + (i === ch) + '" data-done="' + done.has(i) + '"><span class="rail-i">' + i + '</span><span class="rail-t">' + esc(c.nome) + "</span></button>").join("");
-  bar.style.setProperty("--p", (done.size / CHAPTERS.length * 100).toFixed(0) + "%");
-  $("#progress-t").textContent = done.size + " de " + CHAPTERS.length + " galerias concluídas";
+  rail.innerHTML = CHAPTERS.map((c, i) => '<button type="button" class="rail-b" data-go="' + i + '" aria-current="' + (i === ch) + '"><span class="rail-i">' + i + '</span><span class="rail-t">' + esc(c.nome) + "</span></button>").join("");
 }
-
-function stepperHtml(id, steps) {
-  if (!steps.length) return "";
-  const s = stepAt[id] || 0;
-  const list = steps.map((st, i) => {
-    if (i < s) return '<li class="st done"><span class="st-k">✓</span><span class="st-t">' + esc(st.t) + "</span></li>";
-    if (i === s) {
-      return '<li class="st now"><span class="st-k">' + (i + 1) + '</span><div class="st-b"><h4>' + esc(st.t) + "</h4><p>" + fmt(st.d) + "</p>" +
-        (st.cmd ? '<div class="cmd"><pre>' + esc(st.cmd) + '</pre><button type="button" class="copy" data-copy="' + esc(st.cmd) + '">Copiar</button></div>' : "") +
-        (st.link ? '<a class="btn ghost" href="' + st.link + '" target="_blank" rel="noopener">Abrir ↗</a>' : "") +
-        '<button type="button" class="btn" data-step="' + id + '">' + (i === steps.length - 1 ? "Último passo feito ✓" : "Feito, próximo passo →") + "</button></div></li>";
-    }
-    return "";
-  }).join("");
-  const rest = steps.length - s - 1;
-  const fin = s >= steps.length ? '<li class="st fin"><span class="st-k">★</span><span class="st-t">Passos concluídos. Siga para o laboratório.</span></li>' : "";
-  return '<ol class="steps" data-id="' + id + '">' + list + fin + "</ol>" + (rest > 0 ? '<p class="more">Faltam ' + rest + " passo" + (rest > 1 ? "s" : "") + ". Um de cada vez.</p>" : "");
-}
+const cmdBox = (txt) => '<div class="cmd"><pre>' + esc(txt) + '</pre><button type="button" class="copy" data-copy="' + esc(txt) + '">Copiar</button></div>';
 
 function labHtml(c) {
   switch (c.lab) {
-    case "prologo":
-      return '<p class="do">Faça agora: <strong>solte a pepita</strong> e acompanhe a viagem pelas sete galerias.</p><div class="row"><button type="button" class="btn" id="demo">▶ Soltar a pepita</button></div><div class="warn"><strong>Uso responsável.</strong> Pesquise só o que é público, com finalidade legítima e autorizada. Respeite termos, limites de taxa, privacidade e a lei.</div><div class="creed"><h4>O credo da mina</h4><ul>' + PRINCIPIOS.map((p) => "<li>" + esc(p) + "</li>").join("") + "</ul></div>";
-    case "install":
-      return '<p class="do">Faça agora: escolha <strong>um</strong> caminho. Só um.</p><div class="tabs" role="tablist">' + ["pip", "colab", "fonte"].map((k) => '<button type="button" role="tab" class="tab" data-inst="' + k + '" aria-selected="' + (k === instTab) + '">' + INSTALL[k].nome + "</button>").join("") + '</div><p class="muted">' + esc(INSTALL[instTab].para) + '</p><div id="inst-steps"></div>';
-    case "requirement":
-      return '<p class="do">Faça agora: <strong>gire o seletor</strong> clicando num requisito.</p><div class="opts">' + REQS.map((r, i) => '<button type="button" class="opt" data-req="' + i + '" aria-pressed="false"><span>' + esc(r.nome) + "</span></button>").join("") + '</div><p class="out" id="req-out" aria-live="polite">Nenhum requisito escolhido ainda.</p>';
+    case "install": {
+      const it = INSTALL[instTab];
+      const cmds = it.steps.map((s) => s.cmd).filter(Boolean).join("\n");
+      const link = it.steps.find((s) => s.link);
+      return '<div class="tabs" role="tablist">' + ["pip", "colab", "fonte"].map((k) => '<button type="button" role="tab" class="tab" data-inst="' + k + '" aria-selected="' + (k === instTab) + '">' + INSTALL[k].nome + "</button>").join("") + '</div><p class="muted">' + esc(it.para) + "</p>" + (cmds ? cmdBox(cmds) : "") + (link ? '<a class="btn" href="' + link.link + '" target="_blank" rel="noopener">Abrir o notebook ↗</a>' : "") + '<p class="muted">' + it.steps.filter((s) => !s.cmd && !s.link).map((s) => esc(s.t)).join(" · ") + "</p>";
+    }
+    case "requirement": {
+      const btn = (r, i) => '<button type="button" class="opt" data-req="' + i + '" aria-pressed="false"><span>' + esc(r.nome) + "</span></button>";
+      return '<div class="opts two">' + btn(REQS[0], 0) + btn(REQS[1], 1) + '</div><details class="more"><summary>Outros requisitos</summary><div class="opts">' + REQS.map((r, i) => (i > 1 ? btn(r, i) : "")).join("") + '</div></details><p class="out" id="req-out" aria-live="polite"></p>';
+    }
     case "scan":
-      return '<p class="do">Faça agora: escolha um preset e <strong>acione a varredura</strong>.</p><div class="opts three">' + Object.entries(PRESETS).map(([k, p]) => '<button type="button" class="opt" data-pre="' + k + '" aria-pressed="' + (k === preset) + '"><span>' + p.nome + '</span><small>' + p.nota + "</small></button>").join("") + '</div><div class="row"><button type="button" class="btn" id="scan">▶ Varrer</button></div><p class="out" id="scan-out" aria-live="polite">As 50 gavetas são uma amostra visual do registro.</p>';
+      return '<div class="opts three">' + Object.entries(PRESETS).map(([k, p]) => '<button type="button" class="opt" data-pre="' + k + '" aria-pressed="' + (k === preset) + '"><span>' + p.nome + '</span><small>' + p.nota + "</small></button>").join("") + '</div><div class="row"><button type="button" class="btn" id="scan">Simular varredura</button></div><p class="out" id="scan-out" aria-live="polite">As 50 gavetas são uma amostra visual do registro.</p>';
     case "sieve":
-      return '<p class="do">Faça agora: compare o <strong>alvo</strong> com o <strong>controle</strong>.</p><div class="opts two"><button type="button" class="opt" data-sv="real"><span>Perfil que existe</span><small>alvo e controle diferem</small></button><button type="button" class="opt" data-sv="soft"><span>Página 200 para tudo</span><small>alvo e controle iguais</small></button></div><p class="out" id="sv-out" aria-live="polite">As barras A e B representam as duas respostas. A comparação é didática.</p>';
+      return '<div class="opts two"><button type="button" class="opt" data-sv="real"><span>Perfil que existe</span><small>alvo e controle diferem</small></button><button type="button" class="opt" data-sv="soft"><span>Página 200 para tudo</span><small>alvo e controle iguais</small></button></div><p class="out" id="sv-out" aria-live="polite"></p>';
     case "dials":
-      return '<p class="do">Faça agora: escolha um cenário e <strong>clique num mostrador</strong>.</p><div class="opts two">' + Object.entries(SCEN).map(([k, s]) => '<button type="button" class="opt" data-sc="' + k + '" aria-pressed="false"><span>' + s.nome + "</span></button>").join("") + '</div><div class="opts five">' + DIAL_INFO.map((d, i) => '<button type="button" class="opt dial" data-dial="' + i + '" aria-pressed="false"><span>' + d.code + "</span></button>").join("") + '</div><div class="out" id="dial-out" aria-live="polite">Posições ilustrativas, não são pontuações reais.</div>';
+      return '<div class="opts three">' + Object.entries(SCEN).map(([k, s]) => '<button type="button" class="opt" data-sc="' + k + '" aria-pressed="false"><span>' + s.nome + "</span></button>").join("") + '</div><div class="opts five">' + DIAL_INFO.map((d, i) => '<button type="button" class="opt dial" data-dial="' + i + '" aria-pressed="false"><span>' + d.code + "</span></button>").join("") + '</div><div class="out" id="dial-out" aria-live="polite">Clique num medidor para ver a pergunta que ele responde.</div>';
     case "board":
-      return '<p class="do">Faça agora: rode uma <strong>consulta local</strong> no grafo.</p><div class="opts">' + QUERIES.map((q, i) => '<button type="button" class="opt q" data-q="' + i + '" aria-pressed="false"><span><code>' + esc(q.q) + "</code></span></button>").join("") + '<button type="button" class="opt" data-q="-1" aria-pressed="true"><span>Mostrar tudo</span></button></div><p class="out" id="q-out" aria-live="polite">Linhas contínuas são vínculos; pontilhadas são candidatos por similaridade.</p>';
+      return '<div class="opts">' + QUERIES.map((q, i) => '<button type="button" class="opt q" data-q="' + i + '" aria-pressed="false"><span><code>' + esc(q.q) + "</code></span></button>").join("") + '<button type="button" class="opt" data-q="-1" aria-pressed="true"><span>Mostrar tudo</span></button></div><p class="out" id="q-out" aria-live="polite"></p>';
     case "press":
-      return '<p class="do">Faça agora: marque os formatos e <strong>desça a prensa</strong>.</p><div class="opts five">' + FORMATS.map((f, i) => '<label class="chk"><input type="checkbox" id="fmt' + i + '" data-fmt="' + i + '"' + (fmtOn[i] ? " checked" : "") + "><span>" + f + "</span></label>").join("") + '</div><div class="row"><button type="button" class="btn" id="stamp">▼ Lacrar relatório</button></div><div class="out" id="press-out" aria-live="polite">O hash do exemplo aparece aqui.</div>';
+      return '<div class="opts five">' + FORMATS.map((f, i) => '<label class="chk"><input type="checkbox" id="fmt' + i + '" data-fmt="' + i + '"' + (fmtOn[i] ? " checked" : "") + "><span>" + f + "</span></label>").join("") + '</div><div class="row"><button type="button" class="btn" id="stamp">Lacrar exemplo</button></div><div class="out" id="press-out" aria-live="polite"></div>';
   }
   return "";
 }
-
-function quizHtml(c) {
-  if (!c.quiz) return "";
-  return '<section class="quiz" aria-label="Checkpoint"><h3>Checkpoint</h3><p>' + fmt(c.quiz.q) + '</p><div class="qo">' + c.quiz.o.map((o, i) => '<button type="button" class="opt" data-ans="' + i + '"><span>' + fmt(o) + "</span></button>").join("") + '</div><p class="out" id="qz" aria-live="polite"></p></section>';
-}
-
-let instTab = "pip", preset = "standard";
-const fmtOn = [true, true, false, false, false];
-const FORMATS = ["HTML", "JSON", "Markdown", "CSV", "STIX 2.1"];
-const SCEN = SCENARIOS;
-const INST = INSTALL;
 
 function showChapter(i, scroll) {
   token++;
   ch = clamp(i, 0, CHAPTERS.length - 1);
   const c = CHAPTERS[ch];
-  const steps = c.lab === "install" ? [] : c.steps;
+  const lab = labHtml(c);
   panel.innerHTML =
-    '<header class="ch-head"><span class="ch-n">Galeria ' + ch + " de " + (CHAPTERS.length - 1) + "</span><h2>" + esc(c.titulo) + '</h2><p class="ch-local">' + esc(c.local) + "</p></header>" +
-    '<div class="story">' + c.story.map((p) => "<p>" + fmt(p) + "</p>").join("") + "</div>" +
-    (steps.length ? "<h3>Passo a passo</h3>" + stepperHtml("s" + ch, steps) : "") +
-    '<section class="lab"><h3>Laboratório</h3>' + labHtml(c) + "</section>" + quizHtml(c) +
+    '<header class="ch-head"><span class="ch-n">' + (ch === 0 ? "Regras" : "Etapa " + ch + " de " + (CHAPTERS.length - 1)) + "</span><h2>" + esc(c.titulo) + '</h2><p class="lead2">' + fmt(c.para) + "</p></header>" +
+    '<section class="blk"><h3>Faça</h3><ul class="do-list">' + c.faca.map((t) => "<li>" + fmt(t) + "</li>").join("") + "</ul></section>" +
+    (lab ? '<section class="blk lab"><h3>Teste aqui</h3>' + lab + "</section>" : "") +
+    '<section class="blk"><div class="decide"><h3>Decida</h3><p>' + fmt(c.decida) + '</p></div><div class="avoid"><h3>Evite</h3><p>' + fmt(c.evite) + "</p></div></section>" +
+    (ch === 0 ? '<section class="blk"><h3>Princípios</h3><ul class="do-list">' + PRINCIPIOS.map((p) => "<li>" + esc(p) + "</li>").join("") + "</ul></section>" : "") +
     '<nav class="ch-nav"><button type="button" class="btn ghost" data-go="' + (ch - 1) + '"' + (ch === 0 ? " disabled" : "") + '>← Voltar</button>' +
-    (ch < CHAPTERS.length - 1 ? '<button type="button" class="btn" data-next="1">' + (CHAPTERS[ch + 1] ? "Próxima: " + esc(CHAPTERS[ch + 1].nome) : "") + " →</button>" : '<a class="btn" href="#mapa">Ir ao Mapa de Fluxos ↓</a>') + "</nav>";
+    (ch < CHAPTERS.length - 1 ? '<button type="button" class="btn" data-go="' + (ch + 1) + '">Próxima: ' + esc(CHAPTERS[ch + 1].nome) + " →</button>" : '<a class="btn" href="#mapa">Ver os fluxos ↓</a>') + "</nav>";
   renderRail();
   resetMachine();
-  aim({ cart: STOPS[c.cart === "start" ? "start" : c.cart] });
+  aim({ cart: STOPS[c.cart] });
   look(c.view);
-  flags.lantern = ch >= 1 && done.has(1);
-  setRead(c.nome + " · " + c.local.split("·")[1]?.trim() || c.nome);
+  flags.lantern = ch >= 1;
   setRead(ch === 0 ? "Linha de Garimpo Mineiro · visão geral" : c.nome);
-  if (c.lab === "install") renderInst();
   bindLab(c);
   try { history.replaceState(null, "", "#c" + ch); } catch {}
   flows && flows.mark();
-  if (scroll) $("#top").scrollIntoView({ behavior: still.matches ? "auto" : "smooth", block: "start" });
+  if (scroll) $("#top").scrollIntoView({ block: "start" });
 }
-
-function renderInst() {
-  const box = $("#inst-steps");
-  if (!box) return;
-  box.innerHTML = stepperHtml("i" + instTab, INST[instTab].steps);
-}
-
-function complete(i) { if (!done.has(i)) { done.add(i); saveDone(); renderRail(); } }
 
 // ---- laboratórios
 function bindLab(c) {
   const my = token;
   const live = () => my === token;
   const wait = (ms) => new Promise((r) => setTimeout(r, still.matches ? 0 : ms));
-  if (c.lab === "prologo") {
-    $("#demo").onclick = async () => {
-      if (demoOn) return;
-      demoOn = true;
-      const names = { portal: "Boca da mina", hopper: "Funil", tray: "Esteira", comp: "Peneira", dials: "Balança", board: "Quadro", press: "Prensa" };
-      for (const k of Object.keys(names)) {
-        if (!live()) break;
-        aim({ cart: STOPS[k] }); look(k); setRead("Estação · " + names[k]);
-        await wait(1700);
-      }
-      demoOn = false;
-      if (live()) { aim({ cart: STOPS.start }); look("all"); setRead("Linha de Garimpo Mineiro · visão geral"); complete(0); }
-    };
-  }
   if (c.lab === "install") {
     $$("[data-inst]").forEach((b) => (b.onclick = () => { instTab = b.dataset.inst; showChapter(1, false); }));
   }
@@ -347,33 +299,16 @@ function bindLab(c) {
         ? "<strong>" + picked.length + " formato" + (picked.length > 1 ? "s" : "") + " lacrado" + (picked.length > 1 ? "s" : "") + ":</strong> " + picked.join(", ") + '.<br>SHA-256 do exemplo: <code class="hash">' + hex.slice(0, 32) + "…</code><br>O hash prova integridade, não autoria nem identidade."
         : "Marque ao menos um formato para exportar.";
       setRead("Prensa · lacrado");
-      if (picked.length) complete(7);
       busy = false;
     };
   }
 }
 
 // ---- eventos globais
-const quizDone = (i) => done.has(i);
 document.addEventListener("click", (e) => {
   const t = e.target.closest("button, a");
   if (!t) return;
   if (t.dataset.go !== undefined) { showChapter(+t.dataset.go, true); return; }
-  if (t.dataset.next) { complete(ch); showChapter(ch + 1, true); return; }
-  if (t.dataset.step) {
-    const id = t.dataset.step;
-    stepAt[id] = (stepAt[id] || 0) + 1;
-    if (id[0] === "i") {
-      renderInst();
-      if (stepAt[id] >= INST[instTab].steps.length) { flags.lantern = true; complete(1); draw(); setRead("Lanterna acesa · instalação feita"); }
-    } else {
-      const st = $("#panel .steps");
-      st.outerHTML = stepperHtml(id, CHAPTERS[ch].steps);
-      const next = $("#panel .steps .now, #panel .steps .fin");
-      next?.scrollIntoView({ block: "nearest", behavior: still.matches ? "auto" : "smooth" });
-    }
-    return;
-  }
   if (t.dataset.copy !== undefined) {
     const txt = t.dataset.copy;
     const ok = () => { t.textContent = "Copiado ✓"; setTimeout(() => (t.textContent = "Copiar"), 1400); };
@@ -381,12 +316,6 @@ document.addEventListener("click", (e) => {
       const pre = t.parentElement.querySelector("pre"); const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = "Selecionado";
     });
     return;
-  }
-  if (t.dataset.ans !== undefined) {
-    const q = CHAPTERS[ch].quiz, i = +t.dataset.ans, ok = i === q.c;
-    $$("[data-ans]").forEach((b) => { b.dataset.res = +b.dataset.ans === q.c && ok ? "ok" : b === t ? (ok ? "ok" : "no") : ""; });
-    $("#qz").innerHTML = (ok ? "<strong>Certo.</strong> " : "<strong>Ainda não.</strong> Tente outra opção. ") + (ok ? fmt(q.why) : "");
-    if (ok) complete(ch);
   }
 });
 stage.tabIndex = 0;

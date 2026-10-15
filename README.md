@@ -4,7 +4,7 @@ Ambiente de homologação da documentação e do guia interativo em pt-BR do
 [Mineiro OSINT Extractor](https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor).
 O texto de referência é sempre o do repositório original.
 
-- **Guia imersivo** (`index.html`): a "Linha de Garimpo", um diagrama isométrico interativo com sete galerias, laboratórios clicáveis e um mapa de fluxos.
+- **Guia visual** (`index.html`): a "Linha de Garimpo", um diagrama isométrico com sete etapas (faça, decida, evite), laboratórios clicáveis e um mapa de fluxos.
 - **Documentação** (`docs/`): instalação, primeiro scan, presets, Intelligence View, grafo, exportação, glossário e uso responsável.
 - Tudo é HTML, CSS e JS estáticos. Sem backend e sem chamadas a plataformas: as demonstrações são simulações didáticas.
 

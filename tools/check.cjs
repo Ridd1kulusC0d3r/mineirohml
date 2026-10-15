@@ -5,7 +5,7 @@ const base='http://localhost:8765/';
 const p = await b.newPage({viewport:{width:1440,height:900}});
 const errs=[]; p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|fonts\.g/.test(m.text()))errs.push(m.text())}); p.on('pageerror',e=>errs.push('PAGEERR '+e));
 p.on('requestfailed',r=>{ if(!/fonts\.g/.test(r.url())) errs.push('REQFAIL '+r.url())});
-const pages=['index.html','docs/index.html','docs/instalacao.html','docs/primeiro-scan.html','docs/presets.html','docs/intelligence-view.html','docs/grafo.html','docs/exportacao-diff.html','docs/fluxos.html','docs/uso-responsavel.html','docs/glossario.html','docs/solucao-de-problemas.html','404.html'];
+const pages=['index.html','docs/index.html','docs/instalacao.html','docs/primeiro-scan.html','docs/presets.html','docs/intelligence-view.html','docs/grafo.html','docs/exportacao-diff.html','docs/fluxo-do-analista.html','docs/fluxos.html','docs/uso-responsavel.html','docs/glossario.html','docs/solucao-de-problemas.html','404.html'];
 const seen=new Set();
 for(const u of pages){ const r=await p.goto(base+u); if(r.status()!==200) errs.push('HTTP '+r.status()+' '+u);
   const links=await p.$$eval('a[href]',as=>as.map(a=>a.getAttribute('href')).filter(h=>h&&!/^(https?:|#|data:|mailto)/.test(h)));
