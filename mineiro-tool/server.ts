@@ -6,6 +6,7 @@ import { extrasRouter } from './server/routes/extras';
 import { storeRouter } from './server/routes/store';
 import { emailRouter } from './server/routes/email';
 import { registryRouter } from './server/routes/registry';
+import { clientLogRouter } from './server/routes/clientlog';
 import { PUBLIC_MODE, rateLimit, securityHeaders } from './server/security/middleware';
 import { APP_VERSION } from './server/version';
 
@@ -27,6 +28,8 @@ app.use(extrasRouter());
 app.use(storeRouter());
 app.use(emailRouter());
 app.use(registryRouter());
+app.use('/api/client-log', rateLimit({ perMinute: 20, name: 'client-log' }));
+app.use(clientLogRouter());
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -38,6 +41,10 @@ app.get('/api/health', (req, res) => {
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
   });
 });
+
+// A stray rejection from one request should be logged, not take the whole server (and the Colab link) down.
+process.on('unhandledRejection', (reason) => console.error('[unhandledRejection]', reason));
+process.on('uncaughtException', (err) => console.error('[uncaughtException]', err));
 
 async function startServer() {
   try {
