@@ -57,7 +57,6 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 - Analytic Ledger rastreável por evidence ID;
 - relatório HTML, JSON, Markdown e CSV;
 - manifest de exportação com SHA-256;
-- AI Analyst Copilot opcional e marcado como `AI_SYNTHESIZED`.
 
 ## Começar
 
@@ -253,15 +252,13 @@ React UI
    │
    ├── Intelligence Report
    ├── Evidence Audit
-   ├── Registry
-   └── AI Analyst Copilot
+   └── Registry
    │
 Express API
    │
    ├── Scan Orchestrator
    ├── Evidence Engine
-   ├── Registry / Detector Bench
-   └── Intelligence Copilot
+   └── Registry / Detector Bench
    │
 Public endpoints
 ```
@@ -313,8 +310,7 @@ npm run build
 2. **Inconclusivo continua inconclusivo.**
 3. **Provenance precisa sobreviver até o relatório.**
 4. **Contradição tem o mesmo direito de aparecer que evidência de suporte.**
-5. **IA resume e prioriza; não fabrica confiança factual.**
-6. **Coletar mais não é automaticamente investigar melhor.**
+5. **Coletar mais não é automaticamente investigar melhor.**
 
 ## Uso responsável
 

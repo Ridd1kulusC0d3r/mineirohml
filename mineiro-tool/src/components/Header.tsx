@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  BrainCircuit,
   Contrast,
   Download,
   FileSpreadsheet,
@@ -16,14 +15,11 @@ interface HeaderProps {
   onReset: () => void;
   onOpenExport: () => void;
   onGoToDashboard?: () => void;
-  onOpenAiWorkspace?: () => void;
   onOpenBulkImport?: () => void;
   onOpenHistory?: () => void;
   onOpenShortcuts?: () => void;
   cachedScansCount?: number;
   bulkBatchCount?: number;
-  hasPersonalKey?: boolean;
-  selectedModel?: string;
   foundCount: number;
   totalScanned: number;
   isScanning: boolean;
@@ -33,12 +29,10 @@ export function Header({
   onReset,
   onOpenExport,
   onGoToDashboard,
-  onOpenAiWorkspace,
   onOpenBulkImport,
   onOpenHistory,
   cachedScansCount = 0,
   bulkBatchCount = 0,
-  hasPersonalKey = false,
   foundCount,
   totalScanned,
   isScanning,
@@ -111,17 +105,6 @@ export function Header({
               {bulkBatchCount > 0 && (
                 <span className="rounded-md border border-[#343a40] px-1.5 text-[10px] text-[#c5cad0]">{bulkBatchCount}</span>
               )}
-            </button>
-          )}
-          {onOpenAiWorkspace && (
-            <button
-              type="button"
-              onClick={onOpenAiWorkspace}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#9aa1aa] hover:bg-[#14181b] hover:text-[#f2f3f4]"
-            >
-              <BrainCircuit className="h-3.5 w-3.5" />
-              AI
-              {hasPersonalKey && <span className="h-1.5 w-1.5 rounded-full bg-[#e5e7e9]" />}
             </button>
           )}
         </nav>

@@ -26,7 +26,6 @@ Run:
 ~~~bash
 docker run --rm \
   -p 3000:3000 \
-  -e GEMINI_API_KEY="\${GEMINI_API_KEY:-}" \
   mineiro-username-intelligence:1.7.0
 ~~~
 
@@ -61,8 +60,7 @@ Docker image
    ↓
 Managed container
    ├── HTTPS
-   ├── /api/health
-   └── optional GEMINI_API_KEY
+   └── /api/health
 ~~~
 
 Suitable categories include:
@@ -102,7 +100,7 @@ A future Case Bundle export/import is the appropriate way to move investigations
 
 ### MINEIRO_PUBLIC
 
-Set to `1` for any shared or public deployment: stricter rate limits, server Gemini key ignored, SQLite store and avatar hashing disabled.
+Set to `1` for any shared or public deployment: stricter rate limits, SQLite store and avatar hashing disabled.
 
 ### MINEIRO_DB
 
@@ -120,11 +118,9 @@ Per-host concurrent probe cap (default 4) and verify-result cache TTL (default 3
 
 HTTP port. Defaults to 3000.
 
-### GEMINI_API_KEY
+### HOST
 
-Optional server-side Gemini key. The deterministic evidence and assessment pipeline works without AI.
-
-Do not commit API keys to GitHub or bake them into container images.
+Bind address. Defaults to `127.0.0.1` (loopback only). The Docker image sets `HOST=0.0.0.0`; outside a container, set it explicitly only when you want the server reachable from the network.
 
 ## Reverse proxy
 
@@ -143,7 +139,6 @@ The product includes:
 
 - Express API routes;
 - public endpoint verification;
-- Gemini proxy calls;
 - health endpoints.
 
 Those require a server process.

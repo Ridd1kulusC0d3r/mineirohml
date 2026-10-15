@@ -527,7 +527,7 @@ function buildTechnicalAppendix(results: ScanResult[], evidence: EvidenceAssessm
   const resultStatusCounts: Record<string, number> = {};
   results.forEach((r) => { resultStatusCounts[r.status] = (resultStatusCounts[r.status] || 0) + 1; });
   const sourceQualityCounts: Record<SourceQualityGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
-  const provenanceCounts: Record<ProvenanceType, number> = { PRIMARY: 0, DERIVED: 0, EXTERNAL: 0, AI_SYNTHESIZED: 0 };
+  const provenanceCounts: Record<ProvenanceType, number> = { PRIMARY: 0, DERIVED: 0, EXTERNAL: 0 };
   evidence.forEach((e) => {
     sourceQualityCounts[e.sourceQuality]++;
     provenanceCounts[e.provenance]++;
@@ -653,7 +653,6 @@ export function buildIntelligenceAssessment(
       analysisText(language, 'sourceC'),
       analysisText(language, 'sourceD'),
       analysisText(language, 'sourceE'),
-      analysisText(language, 'sourceAI'),
     ],
     analyticLedger: ledger,
     timeline,

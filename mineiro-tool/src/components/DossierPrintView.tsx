@@ -1,4 +1,4 @@
-import type { AiProfileReport, EmailReconData, ScanResult } from '../types';
+import type { EmailReconData, ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import { useI18n } from '../utils/i18n';
 
@@ -6,7 +6,6 @@ interface DossierPrintViewProps {
   target: string;
   targetType: 'username' | 'email';
   results: ScanResult[];
-  aiProfile: AiProfileReport | null;
   emailData: EmailReconData | null;
 }
 
@@ -72,7 +71,7 @@ export function DossierPrintView({
       </section>
 
       <footer className="border-t-2 border-black pt-4 text-[9px] text-neutral-600">
-        Generated locally by Mineiro. Same-handle observations are leads, not identity proof. AI synthesis is excluded from this print assessment by default.
+        Generated locally by Mineiro. Same-handle observations are leads, not identity proof.
       </footer>
     </div>
   );

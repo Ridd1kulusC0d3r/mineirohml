@@ -86,7 +86,6 @@ export const PRINCIPIOS = [
   "Inconclusivo continua inconclusivo.",
   "A proveniência tem que sobreviver até o relatório.",
   "Contradições merecem a mesma visibilidade que as provas a favor.",
-  "A IA resume e prioriza; não fabrica confiança factual.",
   "Coletar mais não é, automaticamente, investigar melhor.",
 ];
 

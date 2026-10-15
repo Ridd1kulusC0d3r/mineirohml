@@ -28,7 +28,7 @@ export default {
     ] },
     { t: "p", x: "Exemplo: confiabilidade do detector 91, confiança do resultado 84, evidência *probable*. Os dois números nunca são fundidos numa nota única." },
     { t: "h2", x: "Proveniência" },
-    { t: "ul", items: ["**PRIMARY**: observado diretamente pelo Mineiro.", "**EXTERNAL**: veio de fonte pública externa.", "**DERIVED**: avaliação construída sobre evidências.", "**AI_SYNTHESIZED**: sugestão de IA. Só gera hipótese e nunca eleva confiança factual."] },
+    { t: "ul", items: ["**PRIMARY**: observado diretamente pelo Mineiro.", "**EXTERNAL**: veio de fonte pública externa.", "**DERIVED**: avaliação construída sobre evidências."] },
     { t: "h2", x: "Modelo do grafo" },
     { t: "p", x: "Nós: TARGET, USERNAME, EMAIL, PROFILE, PLATFORM, DOMAIN, PUBLIC_URL, DISPLAY_NAME, ORGANIZATION, PUBLIC_PROJECT e AVATAR_HASH. Arestas: USES, LINKS_TO, MENTIONS, HOSTED_ON, SAME_HANDLE, SAME_DOMAIN, REFERENCES e OBSERVED_ON. Toda aresta guarda confiança, proveniência e `evidenceId`." },
     { t: "h2", x: "Integridade" },

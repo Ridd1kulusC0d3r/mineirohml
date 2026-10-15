@@ -20,8 +20,6 @@ Também seguem o idioma selecionado:
 - julgamentos, hipóteses, contradições e gaps;
 - Username Linkage;
 - Relationship Graph;
-- AI Analyst Copilot;
-- configuração Gemini;
 - construtor de exportação;
 - HTML e Markdown exportados;
 - narrativas do JSON analítico.
@@ -166,20 +164,7 @@ Formatos:
 
 Cada export gera um manifest JSON companheiro com SHA-256 do payload.
 
-## 8. AI Analyst Copilot
-
-Use quando quiser:
-- resumir evidência;
-- ordenar gaps;
-- sugerir pivôs;
-- revisar contradições;
-- gerar hipóteses alternativas.
-
-A saída é `AI_SYNTHESIZED`.
-
-Ela não aumenta confidence factual sozinha.
-
-## 9. Quando parar
+## 8. Quando parar
 
 Pare de ampliar a coleta quando novos dados não:
 - alterarem julgamentos;

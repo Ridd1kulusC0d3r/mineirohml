@@ -19,7 +19,6 @@ export default {
       ["Build falha", "Dependência ou cache", "Apague `node_modules` e rode `npm ci`"],
       ["Notebook abre, UI não", "Servidor não está saudável", "Veja `/content/mineiro-server.log` e o health check"],
       ["Relatório sem SHA-256", "Web Crypto indisponível", "Use um navegador moderno em `localhost` ou HTTPS"],
-      ["IA não responde", "Chave, modelo ou configuração", "Teste o Copilot sem chave própria ou revise a configuração"],
       ["Full demora", "Cobertura ampla", "Use Full só quando a cobertura realmente importa"],
     ] },
     { t: "h2", x: "Atualizar no Colab" },

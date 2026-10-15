@@ -14,8 +14,6 @@ type View =
   | 'dashboard'
   | 'grid'
   | 'table'
-  | 'profile'
-  | 'ai'
   | 'linkage'
   | 'terminal'
   | 'batch';
@@ -32,7 +30,6 @@ interface StatsBarProps {
   statusFilter: 'all' | 'found' | 'uncertain' | 'not_found' | 'rate_limited';
   setStatusFilter: (val: 'all' | 'found' | 'uncertain' | 'not_found' | 'rate_limited') => void;
   isScanning: boolean;
-  hasAiReport: boolean;
   batchCount?: number;
   isBatchActive?: boolean;
 }

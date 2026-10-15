@@ -59,7 +59,6 @@ const messages = {
     sourceC: 'C = usable evidence that still requires corroboration.',
     sourceD: 'D = weak or inconclusive observation.',
     sourceE: 'E = unverified or structurally weak signal.',
-    sourceAI: 'AI synthesis cannot independently raise factual confidence.',
   },
   pt: {
     req_username_presence: 'Presença de username',
@@ -119,7 +118,6 @@ const messages = {
     sourceC: 'C = evidência utilizável que ainda exige corroboração.',
     sourceD: 'D = observação fraca ou inconclusiva.',
     sourceE: 'E = sinal não verificado ou estruturalmente fraco.',
-    sourceAI: 'Síntese de IA não pode elevar sozinha a confiança factual.',
   },
   es: {
     req_username_presence: 'Presencia de username',
@@ -179,7 +177,6 @@ const messages = {
     sourceC: 'C = evidencia utilizable que todavía requiere corroboración.',
     sourceD: 'D = observación débil o inconclusa.',
     sourceE: 'E = señal no verificada o estructuralmente débil.',
-    sourceAI: 'La síntesis de IA no puede elevar por sí sola la confianza factual.',
   },
 } as const;
 

@@ -30,7 +30,6 @@ Esses nomes podem aparecer apenas em histórico, changelog, compatibilidade ou r
 - Mineiro Evidence Engine
 - Mineiro Correlation Engine
 - Mineiro Intelligence Report
-- Mineiro Analyst Copilot
 
 ## Assinatura recomendada
 

@@ -55,7 +55,6 @@ A `FOUND` is an observation. It is **not** proof of identity.
 - HTML, JSON, Markdown, CSV and **STIX 2.1** exports, each with a SHA-256 manifest;
 - Declarative detectors (`registry/detectors/*.json`) with canary handles and a weekly health check;
 - A local SQLite store (Entity → Observation → Claim) where every claim must cite observations;
-- An optional AI Analyst Copilot, always labeled `AI_SYNTHESIZED` and unable to raise factual confidence.
 
 ## Quick start
 
@@ -148,7 +147,7 @@ See the [CHANGELOG](CHANGELOG.md) for details.
 ## Architecture
 
 ```text
-React UI ── Intelligence Report · Evidence Audit · Registry · AI Analyst Copilot
+React UI ── Intelligence Report · Evidence Audit · Registry
    │
 Express API ── verify (guarded fetch) · extras (variants, pivots, avatar, Wayback, CNPJ) · store (SQLite, STIX)
    │              └─ src/core: evidence · baseline · matchers · net · stix  (pure, unit-tested)

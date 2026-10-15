@@ -18,11 +18,10 @@ import {
   Info,
   Check,
   Copy,
-  BrainCircuit,
   Activity,
   Gauge
 } from 'lucide-react';
-import { ScanResult, EmailReconData, AiProfileReport } from '../types';
+import { ScanResult, EmailReconData } from '../types';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
 import { CATEGORY_COLORS } from '../utils/themeColors';
 
@@ -32,11 +31,10 @@ interface NetworkGraphProps {
   results: ScanResult[];
   target: string;
   emailData: EmailReconData | null;
-  aiProfile?: AiProfileReport | null;
   onPivotScan?: (newTarget: string) => void;
 }
 
-// Graph node definition with AI-extracted profile completeness & activity density
+// Graph node definition with evidence completeness & activity density
 export interface GraphNode extends d3.SimulationNodeDatum {
   id: string;
   label: string;
@@ -66,7 +64,6 @@ export function NetworkRelationshipGraph({
   results,
   target,
   emailData,
-  aiProfile,
   onPivotScan,
 }: NetworkGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -100,69 +97,19 @@ export function NetworkRelationshipGraph({
     return generateAccountLinkageDossier(target, results, emailData);
   }, [target, results, emailData]);
 
-  // Extract AI intelligence signals, completeness scores & activity densities
-  const aiMetrics = useMemo(() => {
+  // Derive completeness scores & activity densities from the evidence
+  const sizingMetrics = useMemo(() => {
     const foundResults = results.filter((r) => r.status === 'found');
     const foundCount = foundResults.length;
     const scannedCount = Math.max(1, results.filter((r) => r.status !== 'pending').length);
 
-    // AI Investigation pivot lookup
-    const aiPivotPlatforms = new Set<string>();
-    if (aiProfile?.investigationPivots) {
-      aiProfile.investigationPivots.forEach((p) => {
-        aiPivotPlatforms.add((p.hop || '').toLowerCase());
-        aiPivotPlatforms.add((p.recommendedAction || '').toLowerCase());
-      });
-    }
-
     // 1. Root Target Node Metrics
-    let targetCompleteness = 0;
-    let targetDensity = 0;
-    const targetFactors: string[] = [];
-
-    if (aiProfile) {
-      const footprint = aiProfile.footprintScore || 50;
-      const skillsCount = aiProfile.technicalSkills?.length || 0;
-      const locationsCount = aiProfile.inferredLocations?.length || 0;
-      const pivotsCount = aiProfile.investigationPivots?.length || 0;
-      const interestsCount = aiProfile.potentialInterests?.length || 0;
-
-      targetCompleteness = Math.min(
-        100,
-        Math.round(
-          footprint * 0.35 +
-          Math.min(skillsCount * 4, 18) +
-          (aiProfile.behavioralSignals ? 18 : 0) +
-          (locationsCount > 0 ? 10 : 0) +
-          Math.min(pivotsCount * 3, 10) +
-          Math.min(interestsCount * 2, 9)
-        )
-      );
-
-      targetDensity = Math.min(
-        100,
-        Math.round(
-          Math.min(foundCount * 5, 40) +
-          (aiProfile.threatLevel === 'Critical' ? 35 : aiProfile.threatLevel === 'Elevated' ? 25 : aiProfile.threatLevel === 'Moderate' ? 15 : 8) +
-          (aiProfile.behavioralSignals?.socialExposureRisk === 'Severe' ? 25 : aiProfile.behavioralSignals?.socialExposureRisk === 'Elevated' ? 15 : 5)
-        )
-      );
-
-      targetFactors.push(`AI Archetype: ${aiProfile.archetype}`);
-      targetFactors.push(`Exposure Threat: ${aiProfile.threatLevel} (Footprint ${aiProfile.footprintScore}/100)`);
-      if (skillsCount > 0) targetFactors.push(`${skillsCount} technical skills identified`);
-      if (aiProfile.behavioralSignals?.opsecHygiene) {
-        targetFactors.push(`OpSec Hygiene: ${aiProfile.behavioralSignals.opsecHygiene}`);
-      }
-      if (locationsCount > 0) {
-        targetFactors.push(`Inferred Locale: ${aiProfile.inferredLocations.join(', ')}`);
-      }
-    } else {
-      targetCompleteness = Math.min(85, Math.round(20 + foundCount * 6));
-      targetDensity = Math.min(85, Math.round((foundCount / scannedCount) * 120 + 15));
-      targetFactors.push(`${foundCount} confirmed digital presences discovered`);
-      targetFactors.push(`${scannedCount} probes scanned`);
-    }
+    const targetCompleteness = Math.min(85, Math.round(20 + foundCount * 6));
+    const targetDensity = Math.min(85, Math.round((foundCount / scannedCount) * 120 + 15));
+    const targetFactors: string[] = [
+      `${foundCount} confirmed digital presences discovered`,
+      `${scannedCount} probes scanned`,
+    ];
 
     // 2. Category Cluster Metrics
     const categoryMetrics: Record<string, { completeness: number; density: number; factors: string[] }> = {};
@@ -175,55 +122,18 @@ export function NetworkRelationshipGraph({
       const catTotal = results.filter((r) => r.category === cat);
       const factors: string[] = [];
 
-      let isAiAligned = false;
-      let alignmentReason = '';
-
-      if (aiProfile) {
-        const arch = (aiProfile.archetype || '').toLowerCase();
-        const skills = (aiProfile.technicalSkills || []).join(' ').toLowerCase();
-        const interests = (aiProfile.potentialInterests || []).join(' ').toLowerCase();
-
-        if (cat === 'developer') {
-          if (arch.includes('developer') || arch.includes('architect') || arch.includes('engineer') || skills.length > 0) {
-            isAiAligned = true;
-            alignmentReason = 'Gemini Archetype: Software Architecture & Code Repos';
-          }
-        } else if (cat === 'security') {
-          if (arch.includes('security') || arch.includes('bounty') || arch.includes('offensive') || aiProfile.threatLevel === 'Critical' || aiProfile.threatLevel === 'Elevated') {
-            isAiAligned = true;
-            alignmentReason = 'Gemini Threat Evaluation: High Security & OpSec Footprint';
-          }
-        } else if (cat === 'social') {
-          if (aiProfile.behavioralSignals?.socialExposureRisk === 'Elevated' || aiProfile.behavioralSignals?.socialExposureRisk === 'Severe') {
-            isAiAligned = true;
-            alignmentReason = 'AI Behavioral Signal: Elevated Public Social Exposure';
-          }
-        } else if (cat === 'crypto') {
-          if (interests.includes('crypto') || interests.includes('blockchain') || interests.includes('web3') || arch.includes('crypto')) {
-            isAiAligned = true;
-            alignmentReason = 'AI Detected Interests: Web3 / Distributed Ledger Assets';
-          }
-        } else if (cat === 'gaming') {
-          if (interests.includes('game') || interests.includes('esports') || interests.includes('steam')) {
-            isAiAligned = true;
-            alignmentReason = 'AI Profile: Digital Gaming Ecosystems';
-          }
-        }
-      }
-
       const hitRatio = catFound.length / Math.max(1, foundCount);
       const density = Math.min(
         100,
-        Math.round(hitRatio * 50 + (catFound.length > 0 ? 25 : 0) + (isAiAligned ? 25 : 0))
+        Math.round(hitRatio * 50 + (catFound.length > 0 ? 25 : 0))
       );
 
       const completeness = Math.min(
         100,
-        Math.round(catFound.length * 15 + (isAiAligned ? 30 : 15) + (catTotal.length > 0 ? 10 : 0))
+        Math.round(catFound.length * 15 + 15 + (catTotal.length > 0 ? 10 : 0))
       );
 
       if (catFound.length > 0) factors.push(`${catFound.length} confirmed platform accounts`);
-      if (isAiAligned) factors.push(alignmentReason);
       factors.push(`${catTotal.length} category surfaces monitored`);
 
       categoryMetrics[cat] = { completeness, density, factors };
@@ -245,9 +155,8 @@ export function NetworkRelationshipGraph({
       targetDensity,
       targetFactors,
       categoryMetrics,
-      aiPivotPlatforms
     };
-  }, [results, aiProfile, emailData]);
+  }, [results, emailData]);
 
   // Construct nodes and links based on filter and active sizing mode
   const { nodes, links } = useMemo(() => {
@@ -299,8 +208,8 @@ export function NetworkRelationshipGraph({
     const targetNodeRadius = calculateRadius(
       'target',
       undefined,
-      aiMetrics.targetCompleteness,
-      aiMetrics.targetDensity,
+      sizingMetrics.targetCompleteness,
+      sizingMetrics.targetDensity,
       100
     );
 
@@ -312,9 +221,9 @@ export function NetworkRelationshipGraph({
       color: '#FFFFFF',
       confidence: 100,
       details: 'Primary Investigation Target Core',
-      profileCompleteness: aiMetrics.targetCompleteness,
-      activityDensity: aiMetrics.targetDensity,
-      densityFactors: aiMetrics.targetFactors
+      profileCompleteness: sizingMetrics.targetCompleteness,
+      activityDensity: sizingMetrics.targetDensity,
+      densityFactors: sizingMetrics.targetFactors
     };
     rawNodes.push(targetNode);
 
@@ -325,7 +234,7 @@ export function NetworkRelationshipGraph({
 
     categoriesPresent.forEach((cat) => {
       const catColor = CATEGORY_COLORS[cat] || CATEGORY_COLORS.default;
-      const metric = aiMetrics.categoryMetrics[cat] || { completeness: 40, density: 40, factors: [] };
+      const metric = sizingMetrics.categoryMetrics[cat] || { completeness: 40, density: 40, factors: [] };
       const hubRadius = calculateRadius(
         'category',
         undefined,
@@ -366,19 +275,16 @@ export function NetworkRelationshipGraph({
 
       if (!isFound && !isUncertain && filterMode !== 'all') return;
 
-      const catMetric = aiMetrics.categoryMetrics[res.category] || { completeness: 30, density: 30 };
-      const pNameLower = res.platformName.toLowerCase();
-      const isAiPivot = aiMetrics.aiPivotPlatforms.has(pNameLower) || aiMetrics.aiPivotPlatforms.has(res.id.toLowerCase());
+      const catMetric = sizingMetrics.categoryMetrics[res.category] || { completeness: 30, density: 30 };
 
       const platformFactors: string[] = [];
       let platformCompleteness = 10;
       let platformDensity = 10;
 
       if (isFound) {
-        platformCompleteness = Math.min(100, Math.round(55 + (res.confidenceScore || 90) * 0.3 + (isAiPivot ? 15 : 0)));
-        platformDensity = Math.min(100, Math.round(45 + catMetric.density * 0.35 + (isAiPivot ? 20 : 0)));
+        platformCompleteness = Math.min(100, Math.round(55 + (res.confidenceScore || 90) * 0.3));
+        platformDensity = Math.min(100, Math.round(45 + catMetric.density * 0.35));
         platformFactors.push(`Live HTTP hit confirmed (${res.confidenceScore || 95}% confidence)`);
-        if (isAiPivot) platformFactors.push('Flagged by Gemini as high-value investigation pivot point');
         if (catMetric.density >= 60) platformFactors.push(`High cluster activity density in ${res.category}`);
       } else if (isUncertain) {
         platformCompleteness = 35;
@@ -505,7 +411,7 @@ export function NetworkRelationshipGraph({
     }
 
     return { nodes: rawNodes, links: rawLinks };
-  }, [results, target, emailData, filterMode, linkageReport, aiMetrics, sizingMode]);
+  }, [results, target, emailData, filterMode, linkageReport, sizingMetrics, sizingMode]);
 
   // Render D3 Force-Directed Simulation
   useEffect(() => {
@@ -747,12 +653,6 @@ export function NetworkRelationshipGraph({
           <span className="text-[10px] px-2 py-0.5 border border-neutral-800 bg-neutral-900 text-neutral-400">
             {nodes.length} Nodes • {links.length} Links
           </span>
-          {aiProfile && (
-            <span className="text-[10px] px-2 py-0.5 border border-white/30 bg-neutral-900 text-white flex items-center gap-1">
-              <BrainCircuit className="w-3 h-3 text-white" />
-              AI Intelligence Grounded
-            </span>
-          )}
         </div>
 
         {/* Filter and Sizing Toggles */}
@@ -769,10 +669,10 @@ export function NetworkRelationshipGraph({
               className={`px-2 py-1 text-[10px] uppercase transition-colors flex items-center gap-1 ${
                 sizingMode === 'completeness' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
-              title="Scale nodes by Profile Completeness extracted from AI analysis"
+              title="Scale nodes by evidence completeness"
             >
               <Sparkles className="w-3 h-3" />
-              AI Completeness
+              Completeness
             </button>
             <button
               type="button"
@@ -899,7 +799,7 @@ export function NetworkRelationshipGraph({
           <div className="text-neutral-400 font-bold uppercase tracking-wider flex items-center justify-between gap-4">
             <span>Topology Legend</span>
             <span className="text-white font-normal">
-              Sizing: {sizingMode === 'completeness' ? 'AI Completeness' : sizingMode === 'density' ? 'Activity Density' : 'Uniform'}
+              Sizing: {sizingMode === 'completeness' ? 'Completeness' : sizingMode === 'density' ? 'Activity Density' : 'Uniform'}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -912,7 +812,7 @@ export function NetworkRelationshipGraph({
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-white inline-block" />
-            <span className="text-neutral-300">Confirmed Hits (Sized by AI Score)</span>
+            <span className="text-neutral-300">Confirmed Hits (Sized by Completeness)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-0.5 bg-white inline-block border-t border-dotted border-white" />
@@ -981,7 +881,7 @@ export function NetworkRelationshipGraph({
                 </div>
               )}
 
-              {/* AI Sizing Metrics Breakdown */}
+              {/* Sizing Metrics Breakdown */}
               <div className="pt-2 border-t border-neutral-800 space-y-2">
                 <div className="flex items-center justify-between text-[10px] uppercase text-neutral-400 font-semibold">
                   <span className="flex items-center gap-1">
@@ -1012,11 +912,11 @@ export function NetworkRelationshipGraph({
                 </div>
               </div>
 
-              {/* Contributing Factors from AI */}
+              {/* Contributing Factors */}
               {selectedNode.densityFactors && selectedNode.densityFactors.length > 0 && (
                 <div className="pt-2 border-t border-neutral-800 space-y-1">
                   <span className="text-[10px] uppercase text-neutral-500 font-bold tracking-wider">
-                    Contributing AI Intelligence:
+                    Contributing Evidence:
                   </span>
                   <ul className="space-y-1 text-[10px] text-neutral-300 list-disc list-inside">
                     {selectedNode.densityFactors.map((factor, idx) => (
@@ -1077,7 +977,7 @@ export function NetworkRelationshipGraph({
       <div className="px-4 py-2 border-t border-neutral-800 bg-neutral-950 text-[10px] text-neutral-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <span className="flex items-center gap-1.5">
           <Sparkles className="w-3 h-3 text-white" />
-          Node radius dynamically reflects {sizingMode === 'completeness' ? 'AI Profile Completeness' : sizingMode === 'density' ? 'Cluster Activity Density' : 'Uniform Grid'}. Drag nodes to adjust gravity layout.
+          Node radius dynamically reflects {sizingMode === 'completeness' ? 'Evidence Completeness' : sizingMode === 'density' ? 'Cluster Activity Density' : 'Uniform Grid'}. Drag nodes to adjust gravity layout.
         </span>
         <span className="text-neutral-400">D3.js Force Physics Engine</span>
       </div>

@@ -76,7 +76,6 @@ O novo relatório:
 - esconde filtros de auditoria enquanto o usuário está na Intelligence View;
 - mantém audit table como drill-down;
 - mantém console como diagnóstico;
-- desloca IA para um bloco opcional;
 - evita exibir todos os gráficos ao mesmo tempo.
 
 ## Acessibilidade

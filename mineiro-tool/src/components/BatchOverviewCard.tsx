@@ -72,27 +72,19 @@ export function BatchOverviewCard({
       let score = 30; // baseline
       let level: 'Low' | 'Moderate' | 'Elevated' | 'Critical' = 'Low';
 
-      if (item.aiProfile) {
-        level = item.aiProfile.threatLevel;
-        if (level === 'Critical') score = 95;
-        else if (level === 'Elevated') score = 75;
-        else if (level === 'Moderate') score = 50;
-        else score = 25;
+      // Inferred from hits found
+      if (item.foundCount >= 15) {
+        level = 'Critical';
+        score = 90;
+      } else if (item.foundCount >= 8) {
+        level = 'Elevated';
+        score = 70;
+      } else if (item.foundCount >= 3) {
+        level = 'Moderate';
+        score = 45;
       } else {
-        // Inferred from hits found
-        if (item.foundCount >= 15) {
-          level = 'Critical';
-          score = 90;
-        } else if (item.foundCount >= 8) {
-          level = 'Elevated';
-          score = 70;
-        } else if (item.foundCount >= 3) {
-          level = 'Moderate';
-          score = 45;
-        } else {
-          level = 'Low';
-          score = 20;
-        }
+        level = 'Low';
+        score = 20;
       }
 
       threatDist[level] = (threatDist[level] || 0) + 1;
@@ -300,7 +292,7 @@ export function BatchOverviewCard({
               </span>
             </div>
             <div className="text-[11px] text-neutral-500 mt-0.5">
-              Derived from AI behavioral heuristics & sensitive hits
+              Derived from the number of verified hits
             </div>
           </div>
           <div className="pt-2 border-t border-neutral-900 text-[10px] text-neutral-400 flex justify-between">
@@ -377,7 +369,7 @@ export function BatchOverviewCard({
           {batch.items.slice(0, 6).map((item) => {
             const isCompleted = item.status === 'completed';
             const isScanning = item.status === 'scanning';
-            const threatBadge = item.aiProfile?.threatLevel || (item.foundCount >= 10 ? 'Critical' : item.foundCount >= 5 ? 'Elevated' : 'Low');
+            const threatBadge = (item.foundCount >= 10 ? 'Critical' : item.foundCount >= 5 ? 'Elevated' : 'Low');
 
             return (
               <div

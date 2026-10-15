@@ -11,7 +11,6 @@ import {
   AtSign, 
   Mail, 
   Layers,
-  Sparkles,
   FileText
 } from 'lucide-react';
 import { 
@@ -30,7 +29,6 @@ interface BulkImportModalProps {
     options: {
       category: string;
       concurrency: number;
-      autoAiProfile: boolean;
     }
   ) => void;
   currentCategory?: string;
@@ -56,7 +54,6 @@ export function BulkImportModal({
   // Options
   const [selectedCategory, setSelectedCategory] = useState<string>(currentCategory);
   const [concurrency, setConcurrency] = useState<number>(currentConcurrency);
-  const [autoAiProfile, setAutoAiProfile] = useState<boolean>(true);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -162,7 +159,6 @@ export function BulkImportModal({
     onStartBulkScan(validTargets, {
       category: selectedCategory,
       concurrency,
-      autoAiProfile,
     });
     onClose();
   };
@@ -468,26 +464,6 @@ export function BulkImportModal({
               </div>
             </div>
 
-            {/* AI Profiling Toggle */}
-            <div className="pt-2 border-t border-neutral-900 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-neutral-400" />
-                <span className="text-neutral-300 text-xs">
-                  Automate Gemini AI Profiling for discovered targets
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setAutoAiProfile(!autoAiProfile)}
-                className={`px-2.5 py-1 text-[10px] uppercase border transition-colors ${
-                  autoAiProfile
-                    ? 'border-neutral-500/70 bg-neutral-950/50 text-neutral-300 font-bold'
-                    : 'border-neutral-800 bg-black text-neutral-500'
-                }`}
-              >
-                {autoAiProfile ? 'ENABLED' : 'DISABLED'}
-              </button>
-            </div>
           </div>
         </div>
 

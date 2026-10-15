@@ -4,7 +4,6 @@ import path from 'path';
 import { verifyRouter } from './server/routes/verify';
 import { extrasRouter } from './server/routes/extras';
 import { storeRouter } from './server/routes/store';
-import { copilotRouter } from './server/routes/copilot';
 import { emailRouter } from './server/routes/email';
 import { registryRouter } from './server/routes/registry';
 import { PUBLIC_MODE, rateLimit, securityHeaders } from './server/security/middleware';
@@ -21,12 +20,11 @@ app.set('trust proxy', process.env.MINEIRO_TRUST_PROXY === '1');
 app.use(securityHeaders);
 app.use(express.json({ limit: '2mb' }));
 app.use('/api/osint/verify', rateLimit({ perMinute: PUBLIC_MODE ? 120 : 6000, burst: PUBLIC_MODE ? 40 : 600, name: 'verify' }));
-app.use(['/api/intelligence', '/api/osint/gemini-validate', '/api/osint/email-recon'], rateLimit({ perMinute: PUBLIC_MODE ? 10 : 60, name: 'ai' }));
+app.use('/api/osint/email-recon', rateLimit({ perMinute: PUBLIC_MODE ? 10 : 60, name: 'recon' }));
 app.use(['/api/osint/wayback', '/api/osint/avatar-hash', '/api/osint/br', '/api/osint/pivots', '/api/osint/variants'], rateLimit({ perMinute: PUBLIC_MODE ? 20 : 300, name: 'extras' }));
 app.use(verifyRouter());
 app.use(extrasRouter());
 app.use(storeRouter());
-app.use(copilotRouter());
 app.use(emailRouter());
 app.use(registryRouter());
 
@@ -37,7 +35,6 @@ app.get('/api/health', (req, res) => {
     service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
     version: APP_VERSION,
     timestamp: new Date().toISOString(),
-    geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
   });
 });

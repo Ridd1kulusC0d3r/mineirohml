@@ -58,6 +58,5 @@ Leia:
 - `PRIMARY`: observado diretamente.
 - `DERIVED`: calculado a partir de evidência.
 - `EXTERNAL`: fonte externa atribuída.
-- `AI_SYNTHESIZED`: síntese produzida por modelo.
 
 Se um termo técnico não estiver claro, veja [FAQ.md](FAQ.md) ou a metodologia.
