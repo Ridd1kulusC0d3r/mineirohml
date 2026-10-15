@@ -10,6 +10,7 @@
 - Official Colab notebook (v1.7.0): partial checkout of `mineiro-tool/`, `npm ci`, production build and `node dist/server.cjs` instead of the Vite dev server.
 - A failed lazy chunk no longer blanks the app: views and modals are wrapped in `LazyBoundary` (inline notice + reload), modals mount only when opened, and the initial page loads just the main bundle and CSS.
 - Browser errors no longer leave an empty dark page: a root error boundary shows the error on screen and the page reports errors to `POST /api/client-log`, which prints them in the server log (the Colab Diagnostics cell shows it).
+- Server keep-alive raised to 65 s (Node's 5 s default races with proxies that reuse idle connections) and a duplicate server on a busy port now exits instead of lingering. `MINEIRO_COMPAT_HEADERS=1` (Colab notebook flag `COMPAT`) is a fallback that drops strict headers and conditional caching.
 - The server logs `unhandledRejection`/`uncaughtException` instead of exiting. The Colab notebook frees a busy port and checks the page and an asset through the VM network interface before showing the link.
 
 ### Removed

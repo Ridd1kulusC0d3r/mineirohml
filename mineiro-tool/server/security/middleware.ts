@@ -2,6 +2,11 @@ import type { NextFunction, Request, Response } from 'express';
 
 /** Minimal security headers (no extra dependency). The UI is served same-origin only. */
 export function securityHeaders(req: Request, res: Response, next: NextFunction) {
+  // MINEIRO_COMPAT_HEADERS=1 (Colab fallback): skip the strict headers that some hosted proxies mishandle.
+  if (process.env.MINEIRO_COMPAT_HEADERS === '1') {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    return next();
+  }
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'no-referrer');

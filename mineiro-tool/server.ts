@@ -58,7 +58,8 @@ async function startServer() {
       app.use(vite.middlewares);
     } else {
       const distPath = path.join(process.cwd(), 'dist');
-      app.use(express.static(distPath));
+      const compat = process.env.MINEIRO_COMPAT_HEADERS === '1';
+      app.use(express.static(distPath, compat ? { etag: false, lastModified: false, cacheControl: false } : {}));
       app.get('/{*splat}', (req, res) => {
         res.sendFile(path.join(distPath, 'index.html'));
       });
@@ -70,9 +71,14 @@ async function startServer() {
       console.log(`[mode] local-first OSINT probes | persistent cases | diff intelligence | v${APP_VERSION}`);
     });
 
+    // Proxies (Colab, load balancers) reuse idle connections longer than Node's 5 s default, which surfaces as random 500/502.
+    server.keepAliveTimeout = 65_000;
+    server.headersTimeout = 66_000;
+
     server.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code === 'EADDRINUSE') {
         console.error(`[Server Error] Port ${PORT} is already in use.`);
+        process.exit(1);
       } else {
         console.error('[Server Error] Unhandled server error:', err);
       }

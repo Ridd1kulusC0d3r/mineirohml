@@ -116,3 +116,6 @@ Isso é esperado. Para uso persistente, rode localmente ou em infraestrutura pr�
 ## Página com HTTP 500 no link do Colab
 
 O proxy do Colab só alcança o servidor se ele escutar em `0.0.0.0`. O notebook já faz isso. Se aparecer *HTTP ERROR 500*, rode de novo **Bootstrap** e **Start Mineiro** para usar a versão atual do notebook e, se persistir, veja o log em `/content/mineiro-server.log`.
+
+Se o 500 persistir, na célula **Environment** troque `COMPAT = False` por `COMPAT = True` e rode de novo Start Mineiro: isso desliga cabeçalhos estritos (COOP, X-Frame-Options) e o cache condicional, que alguns proxies tratam mal. Depois rode **Diagnostics** e envie a saída.
+
