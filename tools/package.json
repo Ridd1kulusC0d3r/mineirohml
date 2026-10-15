@@ -1,14 +1,15 @@
 {
-  "name": "tools",
+  "name": "mineirohml-tools",
   "version": "1.0.0",
-  "description": "",
-  "main": "engine-body.js",
+  "description": "Gerador do site estático do Mineiro hml",
+  "main": "build/index.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build/index.mjs",
+    "check": "node check.cjs"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "esbuild": "^0.28.2"
   }

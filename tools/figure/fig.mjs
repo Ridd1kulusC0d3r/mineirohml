@@ -1,6 +1,7 @@
 // Linha de Garimpo Mineiro — figura isométrica (kit anatomy)
-import * as k from "/mnt/skills/plugins/anatomy/kit/iso-kit.mjs";
-import * as G from "/mnt/skills/plugins/anatomy/kit/lathe.mjs";
+const KIT_DIR = process.env.KIT_DIR || "/mnt/skills/plugins/anatomy/kit";
+const k = await import(KIT_DIR + "/iso-kit.mjs");
+const G = await import(KIT_DIR + "/lathe.mjs");
 
 export const W = 1200;
 export const H = 600;

@@ -1,4 +1,4 @@
-import { FLOWS } from "./content.mjs";
+import { FLOWS } from "../content/guia.mjs";
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const still = matchMedia("(prefers-reduced-motion: reduce)");

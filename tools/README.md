@@ -2,19 +2,20 @@
 
 Gera o site estático (raiz do repositório) a partir de:
 
-- `content.mjs`: capítulos, laboratórios, fluxos e textos do guia imersivo
-- `docs.mjs`: páginas da documentação
-- `fig.mjs`: a figura isométrica (geometria)
-- `engine-body.js`, `flows.mjs`, `src/`: motor interativo, fluxos, CSS e JS das páginas
+- `content/guia.mjs`: etapas, fluxos e textos do guia
+- `content/docs.mjs` e `content/pages/*.mjs`: uma página da documentação por arquivo
+- `figure/`: geometria isométrica (`fig.mjs`), motor interativo (`engine-body.js`) e fluxos (`flows.mjs`)
+- `build/`: gerador (`index.mjs` é a entrada; `assets`, `layout`, `markup`, `pages`)
+- `src/`: CSS e JS das páginas
 
 ```bash
 cd tools
 npm install        # instala o esbuild
-node build-site.mjs
+npm run build   # ou: node build/index.mjs
 ```
 
-`fig.mjs` e `build-site.mjs` usam o kit isométrico "anatomy" (`iso-kit.mjs`, `lathe.mjs`).
-O caminho padrão é `/mnt/skills/plugins/anatomy/kit/`; ajuste os imports de `fig.mjs` e a variável `KIT` se ele estiver em outro lugar.
+`figure/fig.mjs` e o build usam o kit isométrico "anatomy" (`iso-kit.mjs`, `lathe.mjs`).
+O caminho padrão é `/mnt/skills/plugins/anatomy/kit/`; defina `KIT_DIR=/caminho/do/kit` se ele estiver em outro lugar.
 O kit não é copiado para este repositório. Só o resultado gerado (`assets/guia.js`) o inclui.
 
-`check.cjs` é uma verificação com Playwright (links, console, rolagem horizontal), servida em `localhost:8765`.
+`npm run check` roda `check.cjs`, que é uma verificação com Playwright (links, console, rolagem horizontal), servida em `localhost:8765`.

@@ -1,4 +1,4 @@
-import { initFlows } from "../flows.mjs";
+import { initFlows } from "../figure/flows.mjs";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const root = document.body.dataset.root || "./";
