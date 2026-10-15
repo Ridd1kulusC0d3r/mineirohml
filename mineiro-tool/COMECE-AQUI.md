@@ -4,7 +4,7 @@ O caminho mais curto para usar o Mineiro:
 
 ## Google Colab
 
-[▶ Abrir o notebook oficial](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
+[▶ Abrir o notebook oficial](https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 Depois escolha **Runtime → Run all**.
 
@@ -13,8 +13,8 @@ Depois escolha **Runtime → Run all**.
 Pré-requisito: Node.js 22+.
 
 ```bash
-git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
-cd Mineiro-OSINT-Extractor
+git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git
+cd mineirohml/mineiro-tool
 npm install --no-audit --no-fund
 npm run dev
 ```

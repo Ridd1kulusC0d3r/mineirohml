@@ -9,7 +9,7 @@ Esta pasta é o ponto de entrada para quem quer **usar**, **operar**, **entender
 ### Quero testar agora
 Use o notebook oficial:
 
-[Open in Google Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
+[Open in Google Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 Depois leia [GETTING-STARTED.md](GETTING-STARTED.md).
 

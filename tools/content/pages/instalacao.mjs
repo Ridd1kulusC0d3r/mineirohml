@@ -15,7 +15,7 @@ export default {
     { t: "h2", x: "Caminho 2 · Google Colab" },
     { t: "p", x: "O repositório traz um notebook de inteligência de username. [Abrir no Colab](" + COLAB + "). Rode as células na ordem em que aparecem e use apenas um identificador que você esteja autorizado a pesquisar." },
     { t: "h2", x: "Caminho 3 · Código-fonte" },
-    { t: "code", x: "git clone " + REPO + ".git\ncd Mineiro-OSINT-Extractor\nnpm ci --no-audit --no-fund\nnpm run dev" },
+    { t: "code", x: "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-tool\nnpm ci --no-audit --no-fund\nnpm run dev" },
     { t: "p", x: "Pede Node.js 22 ou superior. A interface abre em `http://localhost:3000`." },
     { t: "h2", x: "Verificar a instalação" },
     { t: "ul", items: ["`GET /api/health` informa versão e status.", "`mineiro --check` roda o diagnóstico na instalação por pip.", "Pelo código-fonte: `npm test`, `npm run check` e `npm run detectors:health`."] },
