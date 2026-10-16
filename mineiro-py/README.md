@@ -50,6 +50,7 @@ mineiro hunt relatorios/mineiro-forgejo.assessment.json "PATH from=TARGET to=PRO
 mineiro cases diff <id-do-caso>                   # NEW / DISAPPEARED / CHANGED / CONFIDENCE_UP / CONFIDENCE_DOWN
 mineiro verify relatorios/mineiro-forgejo.html    # confere o SHA-256 do manifesto
 mineiro registry stats | list | validate
+mineiro doctor                                    # diagnostica Python, deps, DNS, TLS e faz consultas reais
 mineiro variants forgejo
 mineiro email alguem@exemplo.com
 ```

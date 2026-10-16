@@ -60,43 +60,87 @@ async def scan_and_report(target: str, *, preset: str = "standard", lang: str = 
     return results, assessment, paths
 
 
-def launch() -> None:
-    """Interactive form for Colab/Jupyter (needs ipywidgets, preinstalled in Colab)."""
-    import ipywidgets as w
-    from IPython.display import HTML, FileLink, display
+def _enable_colab_widgets() -> None:
+    """Colab needs the custom widget manager for ipywidgets 8 and is harmless for 7."""
+    try:
+        from google.colab import output  # type: ignore
 
-    target = w.Text(placeholder="public username (you must be authorized to investigate it)", description="Target", layout=w.Layout(width="520px"))
+        output.enable_custom_widget_manager()
+    except Exception:  # noqa: BLE001  (not in Colab, or already enabled)
+        pass
+
+
+async def run_form(target: str, *, preset: str = "standard", lang: str = "en", requirement: str = "account_correlation",
+                   category: str = "all", out_dir: str | Path = OUT_DIR, formats: tuple[str, ...] = ("html", "markdown", "json")) -> dict:
+    """Widget-free entry point: scan, show the summary and the findings table, and save the reports.
+
+    Use it from a Colab form cell (`#@param`) with top-level `await`. It has no event-loop callbacks to go wrong.
+    """
+    from IPython.display import HTML, display
+
+    target = target.strip()
+    if not target:
+        raise ValueError("Informe um alvo (username público que você está autorizado a investigar).")
+    results, assessment, paths = await scan_and_report(target, preset=preset, lang=lang, requirement=requirement,
+                                                       category=category, out_dir=out_dir, formats=formats)
+    display(HTML(summary_html(assessment)))
+    display(HTML(results_table(results)))
+    print("Relatórios salvos em:")
+    for path in paths:
+        print("  ", path)
+    return assessment
+
+
+def launch():
+    """Interactive form for Colab/Jupyter (ipywidgets 7 or 8). Returns the widget box.
+
+    Everything the user sees is rendered by assigning `HTML.value`, never from inside an `Output` context, so it
+    works from background tasks and with Colab's older widget stack.
+    """
+    try:
+        import ipywidgets as w
+        from IPython.display import display
+    except ImportError:
+        print("ipywidgets não está instalado. Use a célula com formulário (`await run_form(...)`) ou a CLI `mineiro scan`.")
+        return None
+    _enable_colab_widgets()
+
+    target = w.Text(placeholder="username público (você precisa estar autorizado a investigá-lo)", description="Target",
+                    layout=w.Layout(width="560px"))
     preset = w.ToggleButtons(options=[(f"{k} ({SCAN_PRESETS[k]['scope']})", k) for k in SCAN_PRESETS], value="standard", description="Preset")
     lang = w.Dropdown(options=list(LANGUAGES), value="en", description="Language")
-    requirement = w.Dropdown(options=list(REQUIREMENTS), value="account_correlation", description="Requirement", layout=w.Layout(width="360px"))
+    requirement = w.Dropdown(options=list(REQUIREMENTS), value="account_correlation", description="Requirement",
+                             layout=w.Layout(width="380px"))
     run = w.Button(description="Run scan", button_style="primary", icon="search")
-    log = w.Output()
-    view = w.Output()
+    status = w.HTML("")
+    result = w.HTML("")
+    box = w.VBox([target, preset, w.HBox([lang, requirement]), run, status, result])
 
     async def _run() -> None:
         run.disabled = True
-        log.clear_output()
-        view.clear_output()
+        status.value = "<i>Escaneando…</i>"
+        result.value = ""
         try:
-            def show(msg: str) -> None:
-                with log:
-                    print(msg)
+            async with Scanner(preset=preset.value) as scanner:
+                async def tick(r: ScanResult, done: int, total: int) -> None:
+                    status.value = f"<i>[{done}/{total}] {html.escape(r.platform_name)}: {html.escape(r.status)}</i>"
 
-            results, assessment, paths = await scan_and_report(target.value.strip(), preset=preset.value, lang=lang.value,
-                                                               requirement=requirement.value, show=show)
-            with view:
-                display(HTML(summary_html(assessment)))
-                display(HTML(results_table(results)))
-                for path in paths:
-                    display(FileLink(str(path)))
-        except Exception as exc:  # show it in the notebook instead of failing silently
-            with view:
-                print("Error:", exc)
+                results = await scanner.scan(target.value.strip(), on_result=tick)
+            assessment = build_assessment(results, target.value.strip(), requirement.value, lang.value)
+            paths = [write_report(assessment, results, OUT_DIR, fmt)[0] for fmt in ("html", "markdown", "json")]
+            files = "".join(f"<li><code>{html.escape(str(p))}</code></li>" for p in paths)
+            status.value = "<b>Concluído.</b> Arquivos na barra lateral → pasta <code>mineiro-reports</code>."
+            result.value = summary_html(assessment) + results_table(results) + f"<h2>Arquivos</h2><ul>{files}</ul>"
+        except Exception as exc:  # noqa: BLE001  (show the error in the page instead of failing silently)
+            import traceback
+
+            status.value = f"<b style='color:#f85149'>Erro:</b> <pre>{html.escape(traceback.format_exc()[-1500:])}</pre>"
         finally:
             run.disabled = False
 
     def on_click(_button) -> None:
         if not target.value.strip():
+            status.value = "<b>Informe um alvo.</b>"
             return
         try:
             asyncio.get_running_loop().create_task(_run())
@@ -104,4 +148,6 @@ def launch() -> None:
             asyncio.run(_run())
 
     run.on_click(on_click)
-    display(w.VBox([target, preset, w.HBox([lang, requirement]), run, log, view]))
+    box._mineiro_controls = {"target": target, "run": run, "status": status, "result": result}  # for tests
+    display(box)
+    return box

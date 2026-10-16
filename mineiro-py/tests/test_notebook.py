@@ -8,7 +8,7 @@ def test_notebook_is_clean_and_valid():
     nb = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
     assert nb["nbformat"] == 4 and len(nb["cells"]) >= 8
     source = "".join("".join(c["source"]) for c in nb["cells"])
-    for token in ("mineiro.ui", "launch()", "subdirectory=mineiro-py", "verify_manifest", "BRANCHES"):
+    for token in ("mineiro.ui", "launch()", "subdirectory=mineiro-py", "verify_manifest", "BRANCHES", "run_form", "doctor", "#@param"):
         assert token in source
     for forbidden in ("npm ", "node ", "proxyPort", "GEMINI", "api_key"):
         assert forbidden not in source

@@ -158,6 +158,8 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--after")
     c.add_argument("--db")
 
+    sub.add_parser("doctor", help="diagnose this environment (Python, deps, DNS, TLS, real probes)")
+
     f = sub.add_parser("verify", help="check an exported file against its SHA-256 manifest")
     f.add_argument("file")
     return p
@@ -193,6 +195,10 @@ def main(argv: list[str] | None = None) -> int:
             print("case_id is required", file=sys.stderr)
             return 2
         return _cases(args)
+    if args.command == "doctor":
+        from .doctor import doctor
+
+        return 0 if doctor()["ok"] else 1
     if args.command == "verify":
         ok = verify_manifest(args.file)
         print("OK: payload matches its manifest" if ok else "MISMATCH: file changed after export")
