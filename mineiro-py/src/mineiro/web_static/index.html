@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Mineiro · Busca de username</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Mineiro</h1>
+    <p class="sub">Busca de username em fontes públicas. Resultado é observação, não prova de identidade.</p>
+  </header>
+  <form id="form" autocomplete="off">
+    <label for="target">Username</label>
+    <div class="row">
+      <input id="target" name="target" minlength="2" maxlength="64" required placeholder="ex.: maria_silva" spellcheck="false" autocapitalize="off">
+      <select id="preset" aria-label="Profundidade"></select>
+      <button id="go" type="submit">Buscar</button>
+    </div>
+    <div id="tokenrow" hidden><label for="token">Token de acesso</label><input id="token" type="password"></div>
+    <label class="consent"><input type="checkbox" id="consent" required> Uso apenas para fins legítimos (autoavaliação, pesquisa, segurança). Não persigo nem exponho terceiros.</label>
+  </form>
+  <p id="msg" role="status" aria-live="polite"></p>
+  <progress id="bar" max="100" value="0" hidden></progress>
+  <section id="out" hidden>
+    <h2>Resultado <span id="count"></span></h2>
+    <ul id="list"></ul>
+    <div id="judg"></div>
+    <div id="dl" hidden>
+      <span>Baixar relatório:</span>
+      <a data-f="html">HTML</a> <a data-f="markdown">Markdown</a> <a data-f="json">JSON</a> <a data-f="csv">CSV</a> <a data-f="stix">STIX</a>
+    </div>
+  </section>
+  <footer>Sem IA · sem cadastro · os resultados ficam só na memória do servidor por poucos minutos e não são registrados.</footer>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

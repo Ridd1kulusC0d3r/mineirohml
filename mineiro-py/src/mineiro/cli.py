@@ -158,6 +158,9 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--after")
     c.add_argument("--db")
 
+    w = sub.add_parser("serve", help="run the public web service (needs: pip install 'mineiro[web]')")
+    w.add_argument("--host", default="127.0.0.1")
+    w.add_argument("--port", type=int, default=8000)
     sub.add_parser("doctor", help="diagnose this environment (Python, deps, DNS, TLS, real probes)")
 
     f = sub.add_parser("verify", help="check an exported file against its SHA-256 manifest")
@@ -195,6 +198,14 @@ def main(argv: list[str] | None = None) -> int:
             print("case_id is required", file=sys.stderr)
             return 2
         return _cases(args)
+    if args.command == "serve":
+        try:
+            from .web import serve
+        except ImportError:
+            print("Instale o extra web: pip install 'mineiro[web]'", file=sys.stderr)
+            return 2
+        serve(args.host, args.port)
+        return 0
     if args.command == "doctor":
         from .doctor import doctor
 
