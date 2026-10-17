@@ -80,6 +80,17 @@ launch()
 
 Ou abra o [notebook oficial](notebooks/Mineiro_Python_Colab.ipynb) e use *Executar tudo*.
 
+## Site público (hospedagem)
+
+O usuário digita o username no site e recebe o resultado, sem instalar nada.
+
+```bash
+pip install ".[web]"
+mineiro serve --host 0.0.0.0 --port 8000
+```
+
+Há `Dockerfile` e `render.yaml`. Limites de taxa, token de acesso, proxy reverso e notas de privacidade/LGPD estão em [`HOSTING.md`](HOSTING.md).
+
 ## O que vem do Mineiro original
 
 | Área | Módulo |

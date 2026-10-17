@@ -64,6 +64,10 @@ mineiro scan forgejo --lang pt --out relatorios/ --format html,markdown,json
 
 A versão Node/React (`mineiro-tool/`) continua no repositório como referência, com a interface web completa.
 
+## Hospedar a busca como site
+
+A ferramenta Python também roda como serviço web: o visitante digita o username na página e vê o resultado. Veja [`mineiro-py/HOSTING.md`](mineiro-py/HOSTING.md) (`mineiro serve`, Docker, Render, limites e uso responsável).
+
 ## Publicar o site no GitHub Pages
 
 Em **Settings → Pages**, escolha *Deploy from a branch*, branch `main`, pasta `/ (root)`.
