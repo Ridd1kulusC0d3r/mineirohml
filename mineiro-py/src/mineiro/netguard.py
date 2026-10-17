@@ -42,6 +42,8 @@ def is_blocked_address(address: str) -> bool:
 
 def build_detector_url(url_pattern: str, target: str) -> str:
     """Builds the probe URL for a detector. The target is always percent-encoded."""
+    if not target or not target.strip():
+        raise BlockedTargetError("Empty target")
     encoded = quote(target.strip(), safe="")
     return PLACEHOLDER.sub(lambda _m: encoded, url_pattern)
 
@@ -96,7 +98,7 @@ def assert_probeable_url(raw: str) -> str:
         ipaddress.ip_address(host)
     except ValueError:
         if host == "localhost" or host.endswith(".localhost") or host.endswith(".internal"):
-            raise BlockedTargetError("Internal hostname")
+            raise BlockedTargetError("Internal hostname") from None
     else:
         if is_blocked_address(host):
             raise BlockedTargetError("Non-public address literal")

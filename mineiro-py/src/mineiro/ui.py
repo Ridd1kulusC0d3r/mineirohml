@@ -11,7 +11,7 @@ import html
 from pathlib import Path
 
 from .assessment import build_assessment
-from .export import FORMATS, _CSS, write_report
+from .export import _CSS, write_report
 from .i18n import LANGUAGES, REQUIREMENTS
 from .scan import SCAN_PRESETS, Scanner, ScanResult
 
@@ -131,7 +131,7 @@ def launch():
             files = "".join(f"<li><code>{html.escape(str(p))}</code></li>" for p in paths)
             status.value = "<b>Concluído.</b> Arquivos na barra lateral → pasta <code>mineiro-reports</code>."
             result.value = summary_html(assessment) + results_table(results) + f"<h2>Arquivos</h2><ul>{files}</ul>"
-        except Exception as exc:  # noqa: BLE001  (show the error in the page instead of failing silently)
+        except Exception:  # noqa: BLE001  (show the error in the page instead of failing silently)
             import traceback
 
             status.value = f"<b style='color:#f85149'>Erro:</b> <pre>{html.escape(traceback.format_exc()[-1500:])}</pre>"

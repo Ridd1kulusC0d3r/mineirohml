@@ -94,7 +94,7 @@ async def run_doctor(emit=print) -> dict:
 
     emit("")
     emit("RESULT: " + ("everything this tool needs is working." if report["ok"] else "problems found:"))
-    for msg, hint in zip(report["problems"], report["hints"]):
+    for msg, hint in zip(report["problems"], report["hints"], strict=True):
         emit(f"  - {msg}\n    -> {hint}")
     return report
 

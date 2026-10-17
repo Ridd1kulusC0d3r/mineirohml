@@ -16,7 +16,6 @@ from importlib import resources
 from pathlib import Path
 
 from .graph import graph_to_cypher
-from .i18n import analysis_text
 from .scan import ScanResult
 from .stix import build_stix_bundle
 
@@ -149,7 +148,7 @@ def _md(a: dict, s: dict) -> str:
     if s["technical_appendix"]:
         t = a["technical_appendix"]
         out += [f"## 19 {L('appendix')}", "", f"Detectors: {t['detector_count']} · status: {t['result_status_counts']} · source quality: {t['source_quality_counts']}", ""]
-    out += [f"---", L("generated")]
+    out += ["---", L("generated")]
     return "\n".join(out)
 
 

@@ -1,4 +1,3 @@
-import json
 
 import pytest
 
@@ -112,3 +111,20 @@ def test_pivots_extraction_and_budget():
     plan = plan_pivots(pivots, max_depth=1, budget=2)
     assert len(plan["accepted"]) == 2 and {s["reason"] for s in plan["skipped"]} == {"budget"}
     assert plan_pivots(pivots, max_depth=1, budget=9, seen={pivots[0].key})["skipped"][0]["reason"] == "seen"
+
+
+import pytest as _pytest
+
+from mineiro.inputs import InvalidTarget, normalize_username
+
+
+@_pytest.mark.parametrize("bad", ["", " ", "a", "x" * 65, "a b", "a/b", "a\r\nHost: x", "a%00b", "ben@evil.com", "a\u202eb", "{username}", "ben#x", "ben?x=1"])
+def test_invalid_targets_are_rejected(bad):
+    with _pytest.raises(InvalidTarget):
+        normalize_username(bad)
+
+
+def test_valid_targets_are_normalized():
+    assert normalize_username("  @Ben_Dev.1 ") == "Ben_Dev.1"
+    assert normalize_username("ａｂｃ") == "abc"  # full-width -> ascii (NFKC)
+    assert normalize_username("İstanbul")

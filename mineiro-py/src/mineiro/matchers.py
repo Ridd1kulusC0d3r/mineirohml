@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from urllib.parse import urlsplit
 
 MATCHER_TYPES = ("status", "body_contains", "body_regex", "final_path_regex")

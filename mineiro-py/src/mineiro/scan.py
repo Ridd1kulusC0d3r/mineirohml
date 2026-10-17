@@ -18,6 +18,7 @@ from . import __version__
 from .baseline import PageFingerprint, compare_to_baseline, fingerprint_page
 from .evidence import evaluate_evidence
 from .fetch import FetchResult, GuardedFetcher
+from .inputs import normalize_username
 from .matchers import evaluate_matchers
 from .netguard import BlockedTargetError, random_control_username
 from .pivots import GENERIC_DOMAINS
@@ -185,6 +186,7 @@ class Scanner:
 
     async def check(self, detector: Detector, target: str, *, depth: str | None = None,
                     evidence: bool | None = None, baseline: bool | None = None) -> ScanResult:
+        target = normalize_username(target)
         depth = depth or self.depth
         use_evidence = self.evidence if evidence is None else evidence
         use_baseline = (self.baseline if baseline is None else baseline) and use_evidence
@@ -321,9 +323,7 @@ class Scanner:
     # -- orchestration -----------------------------------------------------------------------------------------
     async def scan(self, target: str, *, on_result: Callable[[ScanResult, int, int], Awaitable[None] | None] | None = None,
                    detectors: list[Detector] | None = None, target_type: str = "username") -> list[ScanResult]:
-        target = target.strip().lstrip("@")
-        if not target:
-            raise ValueError("target is required")
+        target = normalize_username(target)
         pool = detectors if detectors is not None else self.registry.scope(self.scope, self.category, target_type)
         total = len(pool)
         sem = asyncio.Semaphore(self.concurrency)
