@@ -5,6 +5,7 @@ export default {
   slug: "api-seguranca", group: "referencia", nome: "API local e segurança", lead: "Endpoints, variáveis de ambiente e as proteções que impedem o servidor de virar um scanner aberto.",
   fontes: [["SECURITY.md", "SECURITY.md"], ["docs/DEPLOYMENT.md", "docs/DEPLOYMENT.md"], ["server.ts", "server.ts"]],
   blocks: [
+    { t: "note", kind: "warn", x: "Esta página descreve o servidor da versão Node/React (`mineiro-tool/`). A versão Python (`mineiro-py/`) não tem servidor: usa a CLI, a API Python e o notebook. As proteções (guarda anti-SSRF, só rotas do registry, DNS fixado) existem nas duas." },
     { t: "h2", x: "Endpoints" },
     { t: "table", head: ["Rota", "Para quê"], rows: [
       ["`GET /api/health`", "versão e status"],

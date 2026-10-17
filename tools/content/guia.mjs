@@ -1,6 +1,7 @@
 // Conteúdo pt-BR do guia — fiel a README / USER-GUIDE / GETTING-STARTED / INTELLIGENCE-METHODOLOGY do repositório.
 export const REPO = "https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor";
-export const COLAB = "https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-tool/notebooks/Mineiro_Username_Intelligence_Colab.ipynb";
+export const COLAB = "https://colab.research.google.com/github/Ridd1kulusC0d3r/mineirohml/blob/main/mineiro-py/notebooks/Mineiro_Python_Colab.ipynb";
+export const PIP = "pip install \"mineiro @ git+https://github.com/Ridd1kulusC0d3r/mineirohml.git#subdirectory=mineiro-py\"";
 export const WHEEL = "https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl";
 
 export const CHAPTERS = [
@@ -11,7 +12,7 @@ export const CHAPTERS = [
     evite: "Tratar FOUND como identidade. Um FOUND é uma observação." },
   { id: 1, nome: "Instalar", titulo: "Instale e confirme que roda", view: "portal", cart: "portal", lab: "install",
     para: "Três caminhos. Escolha um.",
-    faca: ["Rode os comandos do caminho escolhido.", "Confirme com `mineiro --check` ou `GET /api/health`."],
+    faca: ["Rode os comandos do caminho escolhido.", "Confirme com `mineiro registry validate`."],
     decida: "Só usar: pip. Rodar testes ou contribuir: código-fonte. Sem instalar nada: Colab.",
     evite: "Instalar pelos três caminhos. Um basta." },
   { id: 2, nome: "Requisito", titulo: "Escolha o requisito", view: "hopper", cart: "hopper", lab: "requirement",
@@ -90,9 +91,9 @@ export const PRINCIPIOS = [
 ];
 
 export const CHEAT = [
-  ["Instalar (pip)", "pip install "+WHEEL+"\nmineiro               # abre http://127.0.0.1:3000\nmineiro --check       # diagnóstico"],
-  ["Instalar (fonte)", "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-tool\nnpm ci --no-audit --no-fund\nnpm run dev           # http://localhost:3000"],
-  ["Verificar", "GET /api/health   # versão e status saudável\nnpm test · npm run check · npm run detectors:health"],
+  ["Instalar (pip)", PIP+"\nmineiro scan forgejo     # preset standard, relatório no terminal\nmineiro registry validate  # diagnóstico do registry"],
+  ["Instalar (fonte)", "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-py\npip install -e \".[dev,notebook]\"\npytest                # 53 testes, sem internet"],
+  ["Verificar", "mineiro verify relatorios/mineiro-alvo.html   # SHA-256 do manifesto\nmineiro registry stats · pytest"],
   ["Grafo", "MATCH candidate=true AND similarity>=70\nSHARED type=DOMAIN\nPATH from=TARGET to=PROFILE"],
 ];
 
@@ -174,22 +175,22 @@ export const FLOWS = [
 ];
 
 export const INSTALL = {
-  pip: { nome: "pip", para: "Caminho mais curto: um wheel do release, sem Node.", steps: [
+  pip: { nome: "pip", para: "Caminho mais curto: um pacote Python de ~80 kB, sem Node e sem servidor.", steps: [
     { t: "Crie um ambiente isolado", d: "Use um ambiente virtual do Python para não misturar dependências.", cmd: "python -m venv .venv\nsource .venv/bin/activate   # Windows: .venv\\Scripts\\activate" },
-    { t: "Instale o pacote", d: "O README indica `pip install mineiro-osint`. Enquanto o pacote não estiver publicado no PyPI, instale pelo wheel do release v1.7.0.", cmd: "pip install " + WHEEL },
-    { t: "Suba a interface", d: "Abre a interface só na sua máquina, em `http://127.0.0.1:3000`. Os dados ficam em `~/.mineiro`.", cmd: "mineiro" },
-    { t: "Rode o diagnóstico", d: "Confirma que o ambiente está saudável antes de pesquisar qualquer coisa.", cmd: "mineiro --check" },
+    { t: "Instale o pacote", d: "Instala o `mineiro` direto do repositório. Depende só do `httpx`.", cmd: PIP },
+    { t: "Faça o primeiro scan", d: "O preset Standard consulta 49 sites com Evidence Engine e baseline em poucos segundos. Os casos ficam em `~/.mineiro`.", cmd: "mineiro scan forgejo --out relatorios/ --format html,markdown,json" },
+    { t: "Confira a integridade", d: "Cada relatório tem um manifesto com SHA-256. O comando acusa qualquer alteração posterior.", cmd: "mineiro verify relatorios/mineiro-forgejo.html" },
   ] },
-  colab: { nome: "Colab", para: "Sem instalar nada: o notebook sobe o Mineiro numa VM temporária do Colab, sem IA e sem chaves.", steps: [
-    { t: "Abra o notebook", d: "O notebook oficial (v1.7.0) baixa só a pasta `mineiro-tool/`, instala com `npm ci`, gera o build e sobe o servidor.", link: COLAB },
-    { t: "Execute as células na ordem", d: "Escolha Runtime → Run all, ou rode uma célula por vez. Ao final, abra o link **Abrir Mineiro**." },
+  colab: { nome: "Colab", para: "Sem instalar nada: a interface aparece dentro do notebook, sem servidor e sem proxy.", steps: [
+    { t: "Abra o notebook", d: "O notebook oficial instala o pacote Python `mineiro` (~80 kB) e desenha a interface na própria saída da célula.", link: COLAB },
+    { t: "Execute as células na ordem", d: "Escolha Runtime → Run all. O formulário aparece na célula 2: digite o alvo, escolha o preset e clique em Run scan." },
     { t: "Informe um alvo autorizado", d: "Use só um identificador que você tem autorização para pesquisar. Comece pelo preset pequeno." },
   ] },
-  fonte: { nome: "Código-fonte", para: "Para quem quer rodar, testar ou contribuir. Pede Node 22 ou superior.", steps: [
-    { t: "Clone o repositório", d: "Baixa o código do projeto.", cmd: "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-tool" },
-    { t: "Instale as dependências", d: "Com Node 22 ou superior. As flags evitam avisos de auditoria e anúncios de funding.", cmd: "npm ci --no-audit --no-fund" },
-    { t: "Suba o modo de desenvolvimento", d: "A interface abre em `http://localhost:3000`.", cmd: "npm run dev" },
-    { t: "Verifique a saúde", d: "O endpoint de saúde informa versão e status.", cmd: "curl http://localhost:3000/api/health" },
+  fonte: { nome: "Código-fonte", para: "Para quem quer rodar os testes ou contribuir. Pede Python 3.10 ou superior.", steps: [
+    { t: "Clone o repositório", d: "Baixa o código do projeto.", cmd: "git clone https://github.com/Ridd1kulusC0d3r/mineirohml.git\ncd mineirohml/mineiro-py" },
+    { t: "Instale em modo editável", d: "Com as dependências de teste e de notebook.", cmd: "pip install -e \".[dev,notebook]\"" },
+    { t: "Rode os testes", d: "São 53 testes e não acessam a internet.", cmd: "pytest" },
+    { t: "Valide o registry", d: "Confere os 985 detectores.", cmd: "mineiro registry validate" },
   ] },
 };
 export const SCENARIOS_ALL = { ...SCENARIOS, ausente: { nome: "Nada encontrado", v: [0.7, 0.3, 0.05, 0.1, 0.1], lamp: "abs", frase: "ABSENT: o detector não viu o identificador. Isso não prova que a pessoa não existe, só que esta consulta não achou." } };
